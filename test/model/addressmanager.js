@@ -20,24 +20,24 @@ describe('AddressManager', function() {
         version: '1.0.0',
         receiveAddressIndex: 2,
         changeAddressIndex: 0,
-        copayerIndex: 4
+        fcash-payIndex: 4
       };
       var am = AddressManager.fromObj(obj);
       am.derivationStrategy.should.equal('BIP45');
       am.getCurrentAddressPath(false).should.equal('m/4/0/2');
     });
   });
-  describe('#supportsCopayerBranches', function() {
+  describe('#supportsFcashAppBranches', function() {
     it('should return true for BIP45 & false for BIP44', function() {
-      AddressManager.supportsCopayerBranches('BIP45').should.be.true;
-      AddressManager.supportsCopayerBranches('BIP44').should.be.false;
+      AddressManager.supportsFcashAppBranches('BIP45').should.be.true;
+      AddressManager.supportsFcashAppBranches('BIP44').should.be.false;
     });
   });
   describe('BIP45', function() {
     describe('#getCurrentAddressPath', function() {
       it('should return a valid BIP32 path for given index', function() {
         var am = AddressManager.create({
-          copayerIndex: 4,
+          fcash-payIndex: 4,
         });
         am.getCurrentAddressPath(false).should.equal('m/4/0/0');
         am.getCurrentAddressPath(true).should.equal('m/4/1/0');
@@ -51,7 +51,7 @@ describe('AddressManager', function() {
     describe('#getNewAddressPath', function() {
       it('should return a new valid BIP32 path for given index', function() {
         var am = AddressManager.create({
-          copayerIndex: 2,
+          fcash-payIndex: 2,
         });
         am.getNewAddressPath(false).should.equal('m/2/0/0');
         am.getNewAddressPath(true).should.equal('m/2/1/0');
@@ -93,10 +93,10 @@ describe('AddressManager', function() {
         am.getCurrentAddressPath(false).should.equal('m/0/0');
         am.getCurrentAddressPath(true).should.equal('m/1/0');
       });
-      it('should return address path independently of copayerIndex', function() {
+      it('should return address path independently of fcash-payIndex', function() {
         var am = AddressManager.create({
           derivationStrategy: 'BIP44',
-          copayerIndex: 4,
+          fcash-payIndex: 4,
         });
         am.getCurrentAddressPath(false).should.equal('m/0/0');
         am.getCurrentAddressPath(true).should.equal('m/1/0');

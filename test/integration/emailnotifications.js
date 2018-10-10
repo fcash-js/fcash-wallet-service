@@ -33,10 +33,10 @@ describe('Email notifications', function() {
           wallet = w;
 
           var i = 0;
-          async.eachSeries(w.copayers, function(copayer, next) {
-            helpers.getAuthServer(copayer.id, function(server) {
+          async.eachSeries(w.fcash-pay, function(fcash-pay, next) {
+            helpers.getAuthServer(fcash-pay.id, function(server) {
               server.savePreferences({
-                email: 'copayer' + (++i) + '@domain.com',
+                email: 'fcash-pay' + (++i) + '@domain.com',
                 unit: 'bit',
               }, next);
             });
@@ -58,12 +58,12 @@ describe('Email notifications', function() {
                 subjectPrefix: '[test wallet]',
                 publicTxUrlTemplate: {
                   btc: {
-                    livenet: 'https://insight.bitpay.com/tx/{{txid}}',
-                    testnet: 'https://test-insight.bitpay.com/tx/{{txid}}',
+                    livenet: 'https://insight.fcash.cash/tx/{{txid}}',
+                    testnet: 'https://test-insight.fcash.cash/tx/{{txid}}',
                   },
                   bch: {
-                    livenet: 'https://bch-insight.bitpay.com/#/tx/{{txid}}',
-                    testnet: 'https://test-bch-insight.bitpay.com/#/tx/{{txid}}',
+                    livenet: 'https://bch-insight.fcash.cash/#/tx/{{txid}}',
+                    testnet: 'https://test-bch-insight.fcash.cash/#/tx/{{txid}}',
                   }
                 },
               },
@@ -76,7 +76,7 @@ describe('Email notifications', function() {
       });
     });
 
-    it('should notify copayers a new tx proposal has been created', function(done) {
+    it('should notify fcash-pay a new tx proposal has been created', function(done) {
       var _readTemplateFile_old = emailService._readTemplateFile;
       emailService._readTemplateFile = function(language, filename, cb) {
         if (_.endsWith(filename, '.html')) {
@@ -93,14 +93,14 @@ describe('Email notifications', function() {
           }],
           feePerKb: 100e2
         };
-        helpers.createAndPublishTx(server, txOpts, TestData.copayers[0].privKey_1H_0, function(tx) {
+        helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(tx) {
           setTimeout(function() {
             var calls = mailerStub.sendMail.getCalls();
             calls.length.should.equal(2);
             var emails = _.map(calls, function(c) {
               return c.args[0];
             });
-            _.difference(['copayer2@domain.com', 'copayer3@domain.com'], _.pluck(emails, 'to')).should.be.empty;
+            _.difference(['fcash-pay2@domain.com', 'fcash-pay3@domain.com'], _.pluck(emails, 'to')).should.be.empty;
             var one = emails[0];
             one.from.should.equal('fws@dummy.net');
             one.subject.should.contain('New payment proposal');
@@ -130,7 +130,7 @@ describe('Email notifications', function() {
           }],
           feePerKb: 100e2
         };
-        helpers.createAndPublishTx(server, txOpts, TestData.copayers[0].privKey_1H_0, function(tx) {
+        helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(tx) {
           setTimeout(function() {
             var calls = mailerStub.sendMail.getCalls();
             calls.length.should.equal(0);
@@ -145,7 +145,7 @@ describe('Email notifications', function() {
       });
     });
 
-    it('should notify copayers a new outgoing tx has been created', function(done) {
+    it('should notify fcash-pay a new outgoing tx has been created', function(done) {
       var _readTemplateFile_old = emailService._readTemplateFile;
       emailService._readTemplateFile = function(language, filename, cb) {
         if (_.endsWith(filename, '.html')) {
@@ -167,16 +167,16 @@ describe('Email notifications', function() {
         async.waterfall([
 
           function(next) {
-            helpers.createAndPublishTx(server, txOpts, TestData.copayers[0].privKey_1H_0, function(tx) {
+            helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(tx) {
               next(null, tx);
             });
           },
           function(t, next) {
             txp = t;
             async.eachSeries(_.range(2), function(i, next) {
-              var copayer = TestData.copayers[i];
-              helpers.getAuthServer(copayer.id44btc, function(server) {
-                var signatures = helpers.clientSign(txp, copayer.xPrivKey_44H_0H_0H);
+              var fcash-pay = TestData.fcash-pay[i];
+              helpers.getAuthServer(fcash-pay.id44btc, function(server) {
+                var signatures = helpers.clientSign(txp, fcash-pay.xPrivKey_44H_0H_0H);
                 server.signTx({
                   txProposalId: txp.id,
                   signatures: signatures,
@@ -201,13 +201,13 @@ describe('Email notifications', function() {
             var emails = _.map(_.takeRight(calls, 3), function(c) {
               return c.args[0];
             });
-            _.difference(['copayer1@domain.com', 'copayer2@domain.com', 'copayer3@domain.com'], _.pluck(emails, 'to')).should.be.empty;
+            _.difference(['fcash-pay1@domain.com', 'fcash-pay2@domain.com', 'fcash-pay3@domain.com'], _.pluck(emails, 'to')).should.be.empty;
             var one = emails[0];
             one.from.should.equal('fws@dummy.net');
             one.subject.should.contain('Payment sent');
             one.text.should.contain('800,000');
             should.exist(one.html);
-            one.html.should.contain('https://insight.bitpay.com/tx/' + txp.txid);
+            one.html.should.contain('https://insight.fcash.cash/tx/' + txp.txid);
             server.storage.fetchUnsentEmails(function(err, unsent) {
               should.not.exist(err);
               unsent.should.be.empty;
@@ -219,7 +219,7 @@ describe('Email notifications', function() {
       });
     });
 
-    it('should notify copayers a tx has been finally rejected', function(done) {
+    it('should notify fcash-pay a tx has been finally rejected', function(done) {
       helpers.stubUtxos(server, wallet, 1, function() {
         var txOpts = {
           outputs: [{
@@ -233,15 +233,15 @@ describe('Email notifications', function() {
         async.waterfall([
 
           function(next) {
-            helpers.createAndPublishTx(server, txOpts, TestData.copayers[0].privKey_1H_0, function(tx) {
+            helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(tx) {
               next(null, tx);
             });
           },
           function(txp, next) {
             txpId = txp.id;
             async.eachSeries(_.range(1, 3), function(i, next) {
-              var copayer = TestData.copayers[i];
-              helpers.getAuthServer(copayer.id44btc, function(server) {
+              var fcash-pay = TestData.fcash-pay[i];
+              helpers.getAuthServer(fcash-pay.id44btc, function(server) {
                 server.rejectTx({
                   txProposalId: txp.id,
                 }, next);
@@ -256,7 +256,7 @@ describe('Email notifications', function() {
             var emails = _.map(_.takeRight(calls, 2), function(c) {
               return c.args[0];
             });
-            _.difference(['copayer1@domain.com', 'copayer2@domain.com'], _.pluck(emails, 'to')).should.be.empty;
+            _.difference(['fcash-pay1@domain.com', 'fcash-pay2@domain.com'], _.pluck(emails, 'to')).should.be.empty;
             var one = emails[0];
             one.from.should.equal('fws@dummy.net');
             one.subject.should.contain('Payment proposal rejected');
@@ -270,7 +270,7 @@ describe('Email notifications', function() {
       });
     });
 
-    it('should notify copayers of incoming txs', function(done) {
+    it('should notify fcash-pay of incoming txs', function(done) {
       server.createAddress({}, function(err, address) {
         should.not.exist(err);
 
@@ -286,7 +286,7 @@ describe('Email notifications', function() {
             var emails = _.map(calls, function(c) {
               return c.args[0];
             });
-            _.difference(['copayer1@domain.com', 'copayer2@domain.com', 'copayer3@domain.com'], _.pluck(emails, 'to')).should.be.empty;
+            _.difference(['fcash-pay1@domain.com', 'fcash-pay2@domain.com', 'fcash-pay3@domain.com'], _.pluck(emails, 'to')).should.be.empty;
             var one = emails[0];
             one.from.should.equal('fws@dummy.net');
             one.subject.should.contain('New payment received');
@@ -301,7 +301,7 @@ describe('Email notifications', function() {
       });
     });
 
-    it('should notify copayers when tx is confirmed if they are subscribed', function(done) {
+    it('should notify fcash-pay when tx is confirmed if they are subscribed', function(done) {
       server.createAddress({}, function(err, address) {
         should.not.exist(err);
 
@@ -318,7 +318,7 @@ describe('Email notifications', function() {
               var calls = mailerStub.sendMail.getCalls();
               calls.length.should.equal(1);
               var email = calls[0].args[0];
-              email.to.should.equal('copayer1@domain.com');
+              email.to.should.equal('fcash-pay1@domain.com');
               email.from.should.equal('fws@dummy.net');
               email.subject.should.contain('Transaction confirmed');
               server.storage.fetchUnsentEmails(function(err, unsent) {
@@ -334,9 +334,9 @@ describe('Email notifications', function() {
 
 
     it('should notify each email address only once', function(done) {
-      // Set same email address for copayer1 and copayer2
+      // Set same email address for fcash-pay1 and fcash-pay2
       server.savePreferences({
-        email: 'copayer2@domain.com',
+        email: 'fcash-pay2@domain.com',
       }, function(err) {
         server.createAddress({}, function(err, address) {
           should.not.exist(err);
@@ -353,7 +353,7 @@ describe('Email notifications', function() {
               var emails = _.map(calls, function(c) {
                 return c.args[0];
               });
-              _.difference(['copayer2@domain.com', 'copayer3@domain.com'], _.pluck(emails, 'to')).should.be.empty;
+              _.difference(['fcash-pay2@domain.com', 'fcash-pay3@domain.com'], _.pluck(emails, 'to')).should.be.empty;
               var one = emails[0];
               one.from.should.equal('fws@dummy.net');
               one.subject.should.contain('New payment received');
@@ -369,10 +369,10 @@ describe('Email notifications', function() {
       });
     });
 
-    it('should build each email using preferences of the copayers', function(done) {
-      // Set same email address for copayer1 and copayer2
+    it('should build each email using preferences of the fcash-pay', function(done) {
+      // Set same email address for fcash-pay1 and fcash-pay2
       server.savePreferences({
-        email: 'copayer1@domain.com',
+        email: 'fcash-pay1@domain.com',
         language: 'es',
         unit: 'btc',
       }, function(err) {
@@ -392,13 +392,13 @@ describe('Email notifications', function() {
                 return c.args[0];
               });
               var spanish = _.find(emails, {
-                to: 'copayer1@domain.com'
+                to: 'fcash-pay1@domain.com'
               });
               spanish.from.should.equal('fws@dummy.net');
               spanish.subject.should.contain('Nuevo pago recibido');
               spanish.text.should.contain('0.123 BTC');
               var english = _.find(emails, {
-                to: 'copayer2@domain.com'
+                to: 'fcash-pay2@domain.com'
               });
               english.from.should.equal('fws@dummy.net');
               english.subject.should.contain('New payment received');
@@ -430,7 +430,7 @@ describe('Email notifications', function() {
             }],
             feePerKb: 100e2
           };
-          helpers.createAndPublishTx(server, txOpts, TestData.copayers[0].privKey_1H_0, function(tx) {
+          helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(tx) {
             setTimeout(function() {
               var calls = mailerStub.sendMail.getCalls();
               calls.length.should.equal(2);
@@ -454,10 +454,10 @@ describe('Email notifications', function() {
           wallet = w;
 
           var i = 0;
-          async.eachSeries(w.copayers, function(copayer, next) {
-            helpers.getAuthServer(copayer.id, function(server) {
+          async.eachSeries(w.fcash-pay, function(fcash-pay, next) {
+            helpers.getAuthServer(fcash-pay.id, function(server) {
               server.savePreferences({
-                email: 'copayer' + (++i) + '@domain.com',
+                email: 'fcash-pay' + (++i) + '@domain.com',
                 unit: 'bit',
               }, next);
             });
@@ -479,12 +479,12 @@ describe('Email notifications', function() {
                 subjectPrefix: '[test wallet]',
                 publicTxUrlTemplate: {
                   btc: {
-                    livenet: 'https://insight.bitpay.com/tx/{{txid}}',
-                    testnet: 'https://test-insight.bitpay.com/tx/{{txid}}',
+                    livenet: 'https://insight.fcash.cash/tx/{{txid}}',
+                    testnet: 'https://test-insight.fcash.cash/tx/{{txid}}',
                   },
                   bch: {
-                    livenet: 'https://bch-insight.bitpay.com/#/tx/{{txid}}',
-                    testnet: 'https://test-bch-insight.bitpay.com/#/tx/{{txid}}',
+                    livenet: 'https://bch-insight.fcash.cash/#/tx/{{txid}}',
+                    testnet: 'https://test-bch-insight.fcash.cash/#/tx/{{txid}}',
                   }
                 },
               },
@@ -496,7 +496,7 @@ describe('Email notifications', function() {
         });
       });
 
-      it('should NOT notify copayers a new tx proposal has been created', function(done) {
+      it('should NOT notify fcash-pay a new tx proposal has been created', function(done) {
         helpers.stubUtxos(server, wallet, [1, 1], function() {
           var txOpts = {
             outputs: [{
@@ -505,7 +505,7 @@ describe('Email notifications', function() {
             }],
             feePerKb: 100e2
           };
-          helpers.createAndPublishTx(server, txOpts, TestData.copayers[0].privKey_1H_0, function(tx) {
+          helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(tx) {
             setTimeout(function() {
               var calls = mailerStub.sendMail.getCalls();
               calls.length.should.equal(0);

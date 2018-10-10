@@ -1,7 +1,7 @@
-var BWS = {};
+var FWS = {};
 
-BWS.ExpressApp = require('./lib/expressapp');
-BWS.Storage = require('./lib/storage');
+FWS.ExpressApp = require('./lib/expressapp');
+FWS.Storage = require('./lib/storage');
 
 
-module.exports = BWS;
+module.exports = FWS;

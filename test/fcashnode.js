@@ -2,9 +2,9 @@
 
 var should = require('chai').should();
 var proxyquire = require('proxyquire');
-var bitcore = require('fcash-lib');
+var fcore = require('fcash-lib');
 var sinon = require('sinon');
-var Service = require('../bitcorenode');
+var Service = require('../fcashnode');
 
 describe('Fcash Node Service', function() {
   describe('#constructor', function() {
@@ -65,7 +65,7 @@ describe('Fcash Node Service', function() {
     });
   });
   describe('#readHttpsOptions', function() {
-    var TestService = proxyquire('../bitcorenode', {
+    var TestService = proxyquire('../fcorenode', {
       fs: {
         readFileSync: function(arg) {
           return arg;
@@ -109,7 +109,7 @@ describe('Fcash Node Service', function() {
     it('livenet local insight', function() {
       var options = {
         node: {
-          network: bitcore.Networks.livenet,
+          network: fcore.Networks.livenet,
           port: 3001
         }
       };
@@ -124,7 +124,7 @@ describe('Fcash Node Service', function() {
     it('testnet local insight', function() {
       var options = {
         node: {
-          network: bitcore.Networks.testnet,
+          network: fcore.Networks.testnet,
           port: 3001
         }
       };
@@ -144,7 +144,7 @@ describe('Fcash Node Service', function() {
       function TestWSApp() {}
       TestWSApp.prototype.start = sinon.stub().callsArg(2);
       var listen = sinon.stub().callsArg(1);
-      var TestService = proxyquire('../bitcorenode', {
+      var TestService = proxyquire('../fcorenode', {
         '../lib/expressapp': TestExpressApp,
         '../lib/wsapp': TestWSApp,
         'http': {
@@ -174,7 +174,7 @@ describe('Fcash Node Service', function() {
       function TestWSApp() {}
       TestWSApp.prototype.start = sinon.stub().callsArg(2);
       var listen = sinon.stub().callsArgWith(1, new Error('test'));
-      var TestService = proxyquire('../bitcorenode', {
+      var TestService = proxyquire('../fcorenode', {
         '../lib/expressapp': TestExpressApp,
         '../lib/wsapp': TestWSApp,
         'http': {
@@ -215,7 +215,7 @@ describe('Fcash Node Service', function() {
           listen: listen
         };
       };
-      var TestService = proxyquire('../bitcorenode', {
+      var TestService = proxyquire('../fcorenode', {
         '../lib/expressapp': TestExpressApp,
         '../lib/wsapp': TestWSApp,
         'https': {
@@ -260,7 +260,7 @@ describe('Fcash Node Service', function() {
       TestLocker.prototype.listen = sinon.stub();
       function TestEmailService() {}
       TestEmailService.prototype.start = sinon.stub();
-      var TestService = proxyquire('../bitcorenode', {
+      var TestService = proxyquire('../fcorenode', {
         '../lib/blockchainmonitor': TestBlockchainMonitor,
         '../lib/emailservice': TestEmailService,
         'socket.io': sinon.stub().returns({
@@ -288,7 +288,7 @@ describe('Fcash Node Service', function() {
       TestLocker.prototype.listen = sinon.stub();
       function TestEmailService() {}
       TestEmailService.prototype.start = sinon.stub().callsArgWith(1, new Error('test'));
-      var TestService = proxyquire('../bitcorenode', {
+      var TestService = proxyquire('../fcorenode', {
         '../lib/blockchainmonitor': TestBlockchainMonitor,
         '../lib/emailservice': TestEmailService,
         'socket.io': sinon.stub().returns({

@@ -7,8 +7,8 @@ var https = require('https');
 var http = require('http');
 var async = require('async');
 var path = require('path');
-var bitcore = require('fcash-lib');
-var Networks = bitcore.Networks;
+var fcore = require('fcash-lib');
+var Networks = fcore.Networks;
 var Locker = require('locker-server');
 var BlockchainMonitor = require('../lib/blockchainmonitor');
 var EmailService = require('../lib/emailservice');
@@ -24,8 +24,8 @@ var baseConfig = require('../config');
  * @param {Node} options.node - A reference to the Fcash Node instance
 -* @param {Boolean} options.https - Enable https for this module, defaults to node settings.
  * @param {Number} options.fwsPort - Port for Fcash Wallet Service API
- * @param {Number} options.messageBrokerPort - Port for BWS message broker
- * @param {Number} options.lockerPort - Port for BWS locker port
+ * @param {Number} options.messageBrokerPort - Port for FWS message broker
+ * @param {Number} options.lockerPort - Port for FWS locker port
  */
 var Service = function(options) {
   EventEmitter.call(this);

@@ -11,13 +11,13 @@ A Multisig HD Fcash Wallet Service.
 
 Fcash Wallet Service facilitates multisig HD wallets creation and operation through a (hopefully) simple and intuitive REST API.
 
-BWS can usually be installed within minutes and accommodates all the needed infrastructure for peers in a multisig wallet to communicate and operate – with minimum server trust.
+FWS can usually be installed within minutes and accommodates all the needed infrastructure for peers in a multisig wallet to communicate and operate – with minimum server trust.
   
-See [fcash-wallet-client](https://github.com/fcash-project/fcash-wallet-client) for the *official* client library that communicates to BWS and verifies its response. Also check [fcash-wallet](https://github.com/fcash-project/fcash-wallet) for a simple CLI wallet implementation that relies on BWS.
+See [fcash-wallet-client](https://github.com/fcash-project/fcash-wallet-client) for the *official* client library that communicates to FWS and verifies its response. Also check [fcash-wallet](https://github.com/fcash-project/fcash-wallet) for a simple CLI wallet implementation that relies on FWS.
 
-BWS is been used in production enviroments for [Copay Wallet](https://copay.io), [Bitpay App wallet](https://bitpay.com/wallet) and others.  
+FWS is been used in production enviroments for [FcashApp Wallet](https://www.fcash.cash), [Bitpay App wallet](https://fcash.cash/wallet) and others.  
 
-More about BWS at https://blog.bitpay.com/announcing-the-fcash-wallet-suite/
+More about FWS at https://blog.fcash.cash/announcing-the-fcash-wallet-suite/
 
 # Getting Started
 ```
@@ -28,30 +28,30 @@ More about BWS at https://blog.bitpay.com/announcing-the-fcash-wallet-suite/
 ```
 
 
-This will launch the BWS service (with default settings) at `http://localhost:3232/fws/api`.
+This will launch the FWS service (with default settings) at `http://localhost:3232/fws/api`.
 
-BWS needs mongoDB. You can configure the connection at `config.js`
+FWS needs mongoDB. You can configure the connection at `config.js`
 
-BWS supports SSL and Clustering. For a detailed guide on installing BWS with extra features see [Installing BWS](https://github.com/fcash-project/fcash-wallet-service/blob/master/installation.md). 
+FWS supports SSL and Clustering. For a detailed guide on installing FWS with extra features see [Installing FWS](https://github.com/fcash-project/fcash-wallet-service/blob/master/installation.md). 
 
-BWS uses by default a Request Rate Limitation to CreateWallet endpoint. If you need to modify it, check defaults.js' `Defaults.RateLimit`
+FWS uses by default a Request Rate Limitation to CreateWallet endpoint. If you need to modify it, check defaults.js' `Defaults.RateLimit`
 
-# Using BWS with PM2
+# Using FWS with PM2
 
-BWS can be used with PM2 with the provided `app.js` script: 
+FWS can be used with PM2 with the provided `app.js` script: 
  
 ```
   pm2 start app.js --name "fcash-wallet-service"
 ```
 
 # Security Considerations
- * Private keys are never sent to BWS. Copayers store them locally.
- * Extended public keys are stored on BWS. This allows BWS to easily check wallet balance, send offline notifications to copayers, etc.
- * During wallet creation, the initial copayer creates a wallet secret that contains a private key. All copayers need to prove they have the secret by signing their information with this private key when joining the wallet. The secret should be shared using secured channels.
- * A copayer could join the wallet more than once, and there is no mechanism to prevent this. See [wallet](https://github.com/fcash-project/fcash-wallet)'s confirm command, for a method for confirming copayers.
- * All BWS responses are verified:
-  * Addresses and change addresses are derived independently and locally by the copayers from their local data.
-  * TX Proposals templates are signed by copayers and verified by others, so the BWS cannot create or tamper with them.
+ * Private keys are never sent to FWS. FcashApp store them locally.
+ * Extended public keys are stored on FWS. This allows FWS to easily check wallet balance, send offline notifications to fcash-pay, etc.
+ * During wallet creation, the initial fcash-pay creates a wallet secret that contains a private key. All fcash-pay need to prove they have the secret by signing their information with this private key when joining the wallet. The secret should be shared using secured channels.
+ * A fcash-pay could join the wallet more than once, and there is no mechanism to prevent this. See [wallet](https://github.com/fcash-project/fcash-wallet)'s confirm command, for a method for confirming fcash-pay.
+ * All FWS responses are verified:
+  * Addresses and change addresses are derived independently and locally by the fcash-pay from their local data.
+  * TX Proposals templates are signed by fcash-pay and verified by others, so the FWS cannot create or tamper with them.
 
 # Using SSL
 
@@ -69,7 +69,7 @@ BWS can be used with PM2 with the provided `app.js` script:
   // CAroot: '', // ex. 'AddTrustExternalCARoot.crt'
 ```
 
-@dabura667 made a report about how to use letsencrypt with BWS: https://github.com/fcash-project/fcash-wallet-service/issues/423
+@dabura667 made a report about how to use letsencrypt with FWS: https://github.com/fcash-project/fcash-wallet-service/issues/423
   
 
 # REST API
@@ -111,7 +111,7 @@ Returns:
  * proposalId
  * creatorName
  * message
- * actions array ['createdOn', 'type', 'copayerId', 'copayerName', 'comment']
+ * actions array ['createdOn', 'type', 'FcashPayId', 'fcash-payName', 'comment']
   
  
 `/v1/txproposals/`:  Get Wallet's pending transaction proposals and their status
@@ -154,30 +154,30 @@ Returns:
  * name: Name of the wallet 
  * m: Number of required peers to sign transactions 
  * n: Number of total peers on the wallet
- * pubKey: Wallet Creation Public key to check joining copayer's signatures (the private key is unknown by BWS and must be communicated
+ * pubKey: Wallet Creation Public key to check joining fcash-pay's signatures (the private key is unknown by FWS and must be communicated
   by the creator peer to other peers).
 
 Returns: 
  * walletId: Id of the new created wallet
 
 
-`/v1/wallets/:id/copayers/`: Join a Wallet in creation
+`/v1/wallets/:id/fcash-pay/`: Join a Wallet in creation
 
 Required Arguments:
  * walletId: Id of the wallet to join
- * name: Copayer Name
- * xPubKey - Extended Public Key for this copayer.
- * requestPubKey - Public Key used to check requests from this copayer.
- * copayerSignature - Signature used by other copayers to verify that the copayer joining knows the wallet secret.
+ * name: FcashApp Name
+ * xPubKey - Extended Public Key for this fcash-pay.
+ * requestPubKey - Public Key used to check requests from this fcash-pay.
+ * fcash-paySignature - Signature used by other fcash-pay to verify that the fcash-pay joining knows the wallet secret.
 
 Returns:
- * copayerId: Assigned ID of the copayer (to be used on x-identity header)
+ * FcashPayId: Assigned ID of the fcash-pay (to be used on x-identity header)
  * wallet: Object with wallet's information
 
 `/v1/txproposals/`: Add a new transaction proposal
 
 Required Arguments:
- * toAddress: RCPT Bitcoin address.
+ * toAddress: RCPT Fcash address.
  * amount: amount (in satoshis) of the mount proposed to be transfered
  * proposalsSignature: Signature of the proposal by the creator peer, using proposalSigningKey.
  * (opt) message: Encrypted private message to peers.
@@ -215,7 +215,7 @@ Returns:
 `/v1/addresses/scan`: Start an address scan process looking for activity.
 
  Optional Arguments:
- * includeCopayerBranches: Scan all copayer branches following BIP45 recommendation (defaults to false). 
+ * includeFcashAppBranches: Scan all fcash-pay branches following BIP45 recommendation (defaults to false). 
 
 `/v1/txconfirmations/`: Subscribe to receive push notifications when the specified transaction gets confirmed.
 Required Arguments:

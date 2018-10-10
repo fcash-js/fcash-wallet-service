@@ -96,23 +96,23 @@ helpers.signRequestPubKey = function(requestPubKey, xPrivKey) {
   return helpers.signMessage(requestPubKey, priv);
 };
 
-helpers.getAuthServer = function(copayerId, cb) {
+helpers.getAuthServer = function(FcashPayId, cb) {
   var verifyStub = sinon.stub(WalletService.prototype, '_verifySignature');
   verifyStub.returns(true);
 
   WalletService.getInstanceWithAuth({
-    copayerId: copayerId,
+    FcashPayId: FcashPayId,
     message: 'dummy',
     signature: 'dummy',
     clientVersion: helpers.CLIENT_VERSION,
   }, function(err, server) {
     verifyStub.restore();
-    if (err || !server) throw new Error('Could not login as copayerId ' + copayerId + ' err: ' + err);
+    if (err || !server) throw new Error('Could not login as FcashPayId ' + FcashPayId + ' err: ' + err);
     return cb(server);
   });
 };
 
-helpers._generateCopayersTestData = function() {
+helpers._generateFcashAppTestData = function() {
   var xPrivKeys = ['xprv9s21ZrQH143K2n4rV4AtAJFptEmd1tNMKCcSyQBCSuN5eq1dCUhcv6KQJS49joRxu8NNdFxy8yuwTtzCPNYUZvVGC7EPRm2st2cvE7oyTbB',
     'xprv9s21ZrQH143K3BwkLceWNLUsgES15JoZuv8BZfnmDRcCGtDooUAPhY8KovhCWcRLXUun5AYL5vVtUNRrmPEibtfk9ongxAGLXZzEHifpvwZ',
     'xprv9s21ZrQH143K3xgLzxd6SuWqG5Zp1iUmyGgSsJVhdQNeTzAqBFvXXLZqZzFZqocTx4HD9vUVYU27At5i8q46LmBXXL97fo4H9C3tHm4BnjY',
@@ -125,19 +125,19 @@ helpers._generateCopayersTestData = function() {
     'xprv9s21ZrQH143K2wcRMP75tAEL5JnUx4xU2AbUBQzVVUDP7DHZJkjF3kaRE7tcnPLLLL9PGjYTWTJmCQPaQ4GGzgWEUFJ6snwJG9YnQHBFRNR'
   ];
 
-  console.log('var copayers = [');
+  console.log('var fcash-pay = [');
   _.each(xPrivKeys, function(xPrivKeyStr, c) {
     var xpriv = Fcash.HDPrivateKey(xPrivKeyStr);
     var xpub = Fcash.HDPublicKey(xpriv);
 
     var xpriv_45H = xpriv.deriveChild(45, true);
     var xpub_45H = Fcash.HDPublicKey(xpriv_45H);
-    var id45 = Model.Copayer._xPubToCopayerId('btc', xpub_45H.toString());
+    var id45 = Model.FcashApp._xPubToFcashAppId('btc', xpub_45H.toString());
 
     var xpriv_44H_0H_0H = xpriv.deriveChild(44, true).deriveChild(0, true).deriveChild(0, true);
     var xpub_44H_0H_0H = Fcash.HDPublicKey(xpriv_44H_0H_0H);
-    var id44btc = Model.Copayer._xPubToCopayerId('btc', xpub_44H_0H_0H.toString());
-    var id44bch = Model.Copayer._xPubToCopayerId('bch', xpub_44H_0H_0H.toString());
+    var id44btc = Model.FcashApp._xPubToFcashAppId('btc', xpub_44H_0H_0H.toString());
+    var id44bch = Model.FcashApp._xPubToFcashAppId('bch', xpub_44H_0H_0H.toString());
 
     var xpriv_1H = xpriv.deriveChild(1, true);
     var xpub_1H = Fcash.HDPublicKey(xpriv_1H);
@@ -161,9 +161,9 @@ helpers._generateCopayersTestData = function() {
   console.log('];');
 };
 
-helpers.getSignedCopayerOpts = function(opts) {
-  var hash = WalletService._getCopayerHash(opts.name, opts.xPubKey, opts.requestPubKey);
-  opts.copayerSignature = helpers.signMessage(hash, TestData.keyPair.priv);
+helpers.getSignedFcashAppOpts = function(opts) {
+  var hash = WalletService._getFcashAppHash(opts.name, opts.xPubKey, opts.requestPubKey);
+  opts.fcash-paySignature = helpers.signMessage(hash, TestData.keyPair.priv);
   return opts;
 };
 
@@ -175,7 +175,7 @@ helpers.createAndJoinWallet = function(m, n, opts, cb) {
   opts = opts || {};
 
   var server = new WalletService();
-  var copayerIds = [];
+  var FcashPayIds = [];
   var offset = opts.offset || 0;
 
   var walletOpts = {
@@ -194,34 +194,34 @@ helpers.createAndJoinWallet = function(m, n, opts, cb) {
     if (err) return cb(err);
 
     async.each(_.range(n), function(i, cb) {
-      var copayerData = TestData.copayers[i + offset];
+      var fcash-payData = TestData.fcash-pay[i + offset];
 
 
-    var pub = (_.isBoolean(opts.supportBIP44AndP2PKH) && !opts.supportBIP44AndP2PKH) ? copayerData.xPubKey_45H : copayerData.xPubKey_44H_0H_0H;
+    var pub = (_.isBoolean(opts.supportBIP44AndP2PKH) && !opts.supportBIP44AndP2PKH) ? fcash-payData.xPubKey_45H : fcash-payData.xPubKey_44H_0H_0H;
 
     if (opts.network == 'testnet') 
-      pub = copayerData.xPubKey_44H_0H_0Ht;
+      pub = fcash-payData.xPubKey_44H_0H_0Ht;
 
-      var copayerOpts = helpers.getSignedCopayerOpts({
+      var FcashPayOpts = helpers.getSignedFcashAppOpts({
         walletId: walletId,
         coin: opts.coin,
-        name: 'copayer ' + (i + 1),
+        name: 'fcash-pay ' + (i + 1),
         xPubKey: pub,
-        requestPubKey: copayerData.pubKey_1H_0,
+        requestPubKey: fcash-payData.pubKey_1H_0,
         customData: 'custom data ' + (i + 1),
       });
       if (_.isBoolean(opts.supportBIP44AndP2PKH))
-        copayerOpts.supportBIP44AndP2PKH = opts.supportBIP44AndP2PKH;
+        FcashPayOpts.supportBIP44AndP2PKH = opts.supportBIP44AndP2PKH;
 
-      server.joinWallet(copayerOpts, function(err, result) {
+      server.joinWallet(FcashPayOpts, function(err, result) {
         if (err) console.log(err);
         should.not.exist(err);
-        copayerIds.push(result.copayerId);
+        FcashPayIds.push(result.FcashPayId);
         return cb(err);
       });
     }, function(err) {
       if (err) return new Error('Could not generate wallet');
-      helpers.getAuthServer(copayerIds[0], function(s) {
+      helpers.getAuthServer(FcashPayIds[0], function(s) {
         s.getWallet({}, function(err, w) {
           cb(s, w);
         });

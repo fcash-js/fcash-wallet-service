@@ -1,11 +1,11 @@
-The following document is a step-by-step guide to run BWS.
+The following document is a step-by-step guide to run FWS.
 
 ### Prerequisites
 Ensure MongoDB (2.6+) is installed and running. This document assumes that mongod is running at the default port 27017.
 See the configuration section to configure a different host/port.
 
-### Install BWS from NPM
-Use the following steps to Install BWS from the npmjs repository and run it with defaults.
+### Install FWS from NPM
+Use the following steps to Install FWS from the npmjs repository and run it with defaults.
 ```bash
 npm install fcash-wallet-service
 cd fcash-wallet-service
@@ -15,8 +15,8 @@ To change configuration before running, see the Configuration section.
 npm start
 ```
 
-### Install BWS from github source
-Use the following steps to Install BWS from github source and run it with defaults.
+### Install FWS from github source
+Use the following steps to Install FWS from github source and run it with defaults.
 ```bash
 git clone https://github.com/fcash-project/fcash-wallet-service.git
 cd fcash-wallet-service
@@ -29,7 +29,7 @@ npm start
 ### Configuration
 Configuration for all required modules can be specified in https://github.com/fcash-project/fcash-wallet-service/blob/master/config.js
 
-BWS is composed of 5 separate node services -
+FWS is composed of 5 separate node services -
 Locker - locker/locker.js
 Message Broker - messagebroker/messagebroker.js
 Blockchain Monitor - bcmonitor/bcmonitor.js (This service talks to the Blockchain Explorer service configured under blockchainExplorerOpts - see Configure blockchain service below.)
@@ -67,17 +67,17 @@ Example configuration for connecting to message broker service:
 ```
 
 #### Configure blockchain service
-Note: this service will be used by blockchain monitor service as well as by BWS itself.
+Note: this service will be used by blockchain monitor service as well as by FWS itself.
 An example of this configuration is:
 ```javascript
   blockchainExplorerOpts: {
     livenet: {
       provider: 'insight',
-      url: 'https://insight.bitpay.com:443',
+      url: 'https://insight.fcash.cash:443',
     },
     testnet: {
       provider: 'insight',
-      url: 'https://test-insight.bitpay.com:443',
+      url: 'https://test-insight.fcash.cash:443',
     },
   }
 ```
@@ -90,7 +90,7 @@ Example configuration for connecting to email service (using postfix):
     port: 25,
     ignoreTLS: true,
     subjectPrefix: '[Wallet Service]',
-    from: 'wallet-service@bitcore.io',
+    from: 'wallet-service@fcash.cash',
   }
 ```
 
