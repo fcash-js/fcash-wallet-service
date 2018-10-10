@@ -2,11 +2,11 @@
 
 var should = require('chai').should();
 var proxyquire = require('proxyquire');
-var bitcore = require('bitcore-lib');
+var bitcore = require('fcash-lib');
 var sinon = require('sinon');
 var Service = require('../bitcorenode');
 
-describe('Bitcore Node Service', function() {
+describe('Fcash Node Service', function() {
   describe('#constructor', function() {
     it('https settings from node', function() {
       var node = {
@@ -26,7 +26,7 @@ describe('Bitcore Node Service', function() {
         key: 'key',
         cert: 'cert'
       });
-      service.bwsPort.should.equal(3232);
+      service.fwsPort.should.equal(3232);
       service.messageBrokerPort.should.equal(3380);
       service.lockerPort.should.equal(3231);
     });
@@ -46,7 +46,7 @@ describe('Bitcore Node Service', function() {
         key: 'key',
         cert: 'cert'
       });
-      service.bwsPort.should.equal(3232);
+      service.fwsPort.should.equal(3232);
       service.messageBrokerPort.should.equal(3380);
       service.lockerPort.should.equal(3231);
     });
@@ -54,12 +54,12 @@ describe('Bitcore Node Service', function() {
       var node = {};
       var options = {
         node: node,
-        bwsPort: 1000,
+        fwsPort: 1000,
         messageBrokerPort: 1001,
         lockerPort: 1002
       };
       var service = new Service(options);
-      service.bwsPort.should.equal(1000);
+      service.fwsPort.should.equal(1000);
       service.messageBrokerPort.should.equal(1001);
       service.lockerPort.should.equal(1002);
     });
@@ -155,7 +155,7 @@ describe('Bitcore Node Service', function() {
       });
       var options = {
         node: {
-          bwsPort: 3232
+          fwsPort: 3232
         }
       };
       var service = new TestService(options);
@@ -188,7 +188,7 @@ describe('Bitcore Node Service', function() {
       });
       var options = {
         node: {
-          bwsPort: 3232
+          fwsPort: 3232
         }
       };
       var service = new TestService(options);
@@ -225,7 +225,7 @@ describe('Bitcore Node Service', function() {
       var options = {
         node: {
           https: true,
-          bwsPort: 3232
+          fwsPort: 3232
         }
       };
       var service = new TestService(options);

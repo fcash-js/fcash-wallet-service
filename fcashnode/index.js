@@ -7,7 +7,7 @@ var https = require('https');
 var http = require('http');
 var async = require('async');
 var path = require('path');
-var bitcore = require('bitcore-lib');
+var bitcore = require('fcash-lib');
 var Networks = bitcore.Networks;
 var Locker = require('locker-server');
 var BlockchainMonitor = require('../lib/blockchainmonitor');
@@ -19,11 +19,11 @@ var EventEmitter = require('events').EventEmitter;
 var baseConfig = require('../config');
 
 /**
- * A Bitcore Node Service module
+ * A Fcash Node Service module
  * @param {Object} options
- * @param {Node} options.node - A reference to the Bitcore Node instance
+ * @param {Node} options.node - A reference to the Fcash Node instance
 -* @param {Boolean} options.https - Enable https for this module, defaults to node settings.
- * @param {Number} options.bwsPort - Port for Bitcore Wallet Service API
+ * @param {Number} options.fwsPort - Port for Fcash Wallet Service API
  * @param {Number} options.messageBrokerPort - Port for BWS message broker
  * @param {Number} options.lockerPort - Port for BWS locker port
  */
@@ -33,7 +33,7 @@ var Service = function(options) {
   this.node = options.node;
   this.https = options.https || this.node.https;
   this.httpsOptions = options.httpsOptions || this.node.httpsOptions;
-  this.bwsPort = options.bwsPort || baseConfig.port;
+  this.fwsPort = options.fwsPort || baseConfig.port;
   this.messageBrokerPort = options.messageBrokerPort || 3380;
   if (baseConfig.lockOpts) {
     this.lockerPort = baseConfig.lockOpts.lockerServer.port;
@@ -84,7 +84,7 @@ Service.prototype._getConfiguration = function() {
     apiPrefix: '/insight-api'
   };
 
-  // A bitcore-node is either livenet or testnet, so we'll pass
+  // A fcash-node is either livenet or testnet, so we'll pass
   // the configuration options to communicate via the local running
   // instance of the insight-api service.
   if (self.node.network === Networks.livenet) {
@@ -121,7 +121,7 @@ Service.prototype._startWalletService = function(config, next) {
     if (err) {
       return next(err);
     }
-    self.server.listen(self.bwsPort, next);
+    self.server.listen(self.fwsPort, next);
   });
 };
 

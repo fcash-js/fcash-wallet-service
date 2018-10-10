@@ -6,7 +6,7 @@ var async = require('async');
 var scripts = ['locker/locker.js', 'messagebroker/messagebroker.js',
   'bcmonitor/bcmonitor.js', 'emailservice/emailservice.js',
   'pushnotificationsservice/pushnotificationsservice.js',
-  'fiatrateservice/fiatrateservice.js', 'bws.js'];
+  'fiatrateservice/fiatrateservice.js', 'fws.js'];
 
 async.eachSeries(scripts, function(script, callback) {
   console.log(`Spawning ${script}`);

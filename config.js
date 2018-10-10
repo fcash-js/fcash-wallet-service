@@ -1,5 +1,5 @@
 var config = {
-  basePath: '/bws/api',
+  basePath: '/fws/api',
   disableLogs: false,
   port: 3232,
 
@@ -21,7 +21,7 @@ var config = {
 
   storageOpts: {
     mongoDb: {
-      uri: 'mongodb://localhost:27017/bws',
+      uri: 'mongodb://localhost:27017/fws',
     },
   },
   lockOpts: {
