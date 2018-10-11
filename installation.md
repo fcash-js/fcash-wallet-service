@@ -18,7 +18,7 @@ npm start
 ### Install FWS from github source
 Use the following steps to Install FWS from github source and run it with defaults.
 ```bash
-git clone https://github.com/fcash-project/fcash-wallet-service.git
+git clone https://github.com/fcash-js/fcash-wallet-service.git
 cd fcash-wallet-service
 npm install
 ```
@@ -27,7 +27,7 @@ To change configuration before running, see the Configuration section.
 npm start
 ```
 ### Configuration
-Configuration for all required modules can be specified in https://github.com/fcash-project/fcash-wallet-service/blob/master/config.js
+Configuration for all required modules can be specified in https://github.com/fcash-js/fcash-wallet-service/blob/master/config.js
 
 FWS is composed of 5 separate node services -
 Locker - locker/locker.js

@@ -2,8 +2,8 @@
 # fcash-wallet-service
 
 [![NPM Package](https://img.shields.io/npm/v/fcash-wallet-service.svg?style=flat-square)](https://www.npmjs.org/package/fcash-wallet-service)
-[![Build Status](https://img.shields.io/travis/fcash-project/fcash-wallet-service.svg?branch=master&style=flat-square)](https://travis-ci.org/fcash-project/fcash-wallet-service)
-[![Coverage Status](https://coveralls.io/repos/fcash-project/fcash-wallet-service/badge.svg?branch=master)](https://coveralls.io/r/fcash-project/fcash-wallet-service?branch=master)
+[![Build Status](https://img.shields.io/travis/fcash-js/fcash-wallet-service.svg?branch=master&style=flat-square)](https://travis-ci.org/fcash-js/fcash-wallet-service)
+[![Coverage Status](https://coveralls.io/repos/fcash-js/fcash-wallet-service/badge.svg?branch=master)](https://coveralls.io/r/fcash-js/fcash-wallet-service?branch=master)
 
 A Multisig HD Fcash Wallet Service.
 
@@ -13,7 +13,7 @@ Fcash Wallet Service facilitates multisig HD wallets creation and operation thro
 
 FWS can usually be installed within minutes and accommodates all the needed infrastructure for peers in a multisig wallet to communicate and operate – with minimum server trust.
   
-See [fcash-wallet-client](https://github.com/fcash-project/fcash-wallet-client) for the *official* client library that communicates to FWS and verifies its response. Also check [fcash-wallet](https://github.com/fcash-project/fcash-wallet) for a simple CLI wallet implementation that relies on FWS.
+See [fcash-wallet-client](https://github.com/fcash-js/fcash-wallet-client) for the *official* client library that communicates to FWS and verifies its response. Also check [fcash-wallet](https://github.com/fcash-js/fcash-wallet) for a simple CLI wallet implementation that relies on FWS.
 
 FWS is been used in production enviroments for [FcashApp Wallet](https://www.fcash.cash), [FcashApp Wallet](https://fcash.cash/wallet) and others.  
 
@@ -21,7 +21,7 @@ More about FWS at https://blog.fcash.cash/announcing-the-fcash-wallet-suite/
 
 # Getting Started
 ```
- git clone https://github.com/fcash-project/fcash-wallet-service.git
+ git clone https://github.com/fcash-js/fcash-wallet-service.git
  cd fcash-wallet-service
  npm install
  npm start
@@ -32,7 +32,7 @@ This will launch the FWS service (with default settings) at `http://localhost:32
 
 FWS needs mongoDB. You can configure the connection at `config.js`
 
-FWS supports SSL and Clustering. For a detailed guide on installing FWS with extra features see [Installing FWS](https://github.com/fcash-project/fcash-wallet-service/blob/master/installation.md). 
+FWS supports SSL and Clustering. For a detailed guide on installing FWS with extra features see [Installing FWS](https://github.com/fcash-js/fcash-wallet-service/blob/master/installation.md). 
 
 FWS uses by default a Request Rate Limitation to CreateWallet endpoint. If you need to modify it, check defaults.js' `Defaults.RateLimit`
 
@@ -48,7 +48,7 @@ FWS can be used with PM2 with the provided `app.js` script:
  * Private keys are never sent to FWS. FcashApp store them locally.
  * Extended public keys are stored on FWS. This allows FWS to easily check wallet balance, send offline notifications to fcash-pay, etc.
  * During wallet creation, the initial fcash-pay creates a wallet secret that contains a private key. All fcash-pay need to prove they have the secret by signing their information with this private key when joining the wallet. The secret should be shared using secured channels.
- * A fcash-pay could join the wallet more than once, and there is no mechanism to prevent this. See [wallet](https://github.com/fcash-project/fcash-wallet)'s confirm command, for a method for confirming fcash-pay.
+ * A fcash-pay could join the wallet more than once, and there is no mechanism to prevent this. See [wallet](https://github.com/fcash-js/fcash-wallet)'s confirm command, for a method for confirming fcash-pay.
  * All FWS responses are verified:
   * Addresses and change addresses are derived independently and locally by the fcash-pay from their local data.
   * TX Proposals templates are signed by fcash-pay and verified by others, so the FWS cannot create or tamper with them.
@@ -69,7 +69,7 @@ FWS can be used with PM2 with the provided `app.js` script:
   // CAroot: '', // ex. 'AddTrustExternalCARoot.crt'
 ```
 
-@dabura667 made a report about how to use letsencrypt with FWS: https://github.com/fcash-project/fcash-wallet-service/issues/423
+@dabura667 made a report about how to use letsencrypt with FWS: https://github.com/fcash-js/fcash-wallet-service/issues/423
   
 
 # REST API
@@ -85,14 +85,14 @@ Note: all currency amounts are in units of satoshis (1/100,000,000 of a bitcoin)
 ```
 Identity is the Peer-ID, this will identify the peer and its wallet. Signature is the current request signature, using `requestSigningKey`, the `m/1/1` derivative of the Extended Private Key.
 
-See [Fcash Wallet Client](https://github.com/fcash-project/fcash-wallet-client/blob/master/lib/api.js#L73) for implementation details.
+See [Fcash Wallet Client](https://github.com/fcash-js/fcash-wallet-client/blob/master/lib/api.js#L73) for implementation details.
 
 
 ## GET Endpoints
 `/v1/wallets/`: Get wallet information
 
 Returns:
- * Wallet object. (see [fields on the source code](https://github.com/fcash-project/fcash-wallet-service/blob/master/lib/model/wallet.js)).
+ * Wallet object. (see [fields on the source code](https://github.com/fcash-js/fcash-wallet-service/blob/master/lib/model/wallet.js)).
 
 `/v1/txhistory/`: Get Wallet's transaction history
  
@@ -116,12 +116,12 @@ Returns:
  
 `/v1/txproposals/`:  Get Wallet's pending transaction proposals and their status
 Returns:
- * List of pending TX Proposals. (see [fields on the source code](https://github.com/fcash-project/fcash-wallet-service/blob/master/lib/model/txproposal.js))
+ * List of pending TX Proposals. (see [fields on the source code](https://github.com/fcash-js/fcash-wallet-service/blob/master/lib/model/txproposal.js))
 
 `/v1/addresses/`: Get Wallet's main addresses (does not include change addresses)
 
 Returns:
- * List of Addresses object: (https://github.com/fcash-project/fcash-wallet-service/blob/master/lib/model/address.js)).  This call is mainly provided so the client check this addresses for incoming transactions (using a service like [Insight](https://insight.is)
+ * List of Addresses object: (https://github.com/fcash-js/fcash-wallet-service/blob/master/lib/model/address.js)).  This call is mainly provided so the client check this addresses for incoming transactions (using a service like [Insight](https://insight.is)
 
 `/v1/balance/`:  Get Wallet's balance
 
@@ -186,13 +186,13 @@ Required Arguments:
  * (opt) excludeUnconfirmedUtxos: Do not use UTXOs of unconfirmed transactions as inputs for this TX.
 
 Returns:
- * TX Proposal object. (see [fields on the source code](https://github.com/fcash-project/fcash-wallet-service/blob/master/lib/model/txproposal.js)). `.id` is probably needed in this case.
+ * TX Proposal object. (see [fields on the source code](https://github.com/fcash-js/fcash-wallet-service/blob/master/lib/model/txproposal.js)). `.id` is probably needed in this case.
 
 
 `/v3/addresses/`: Request a new main address from wallet . (creates an address on normal conditions)
 
 Returns:
- * Address object: (https://github.com/fcash-project/fcash-wallet-service/blob/master/lib/model/address.js)). Note that `path` is returned so client can derive the address independently and check server's response.
+ * Address object: (https://github.com/fcash-js/fcash-wallet-service/blob/master/lib/model/address.js)). Note that `path` is returned so client can derive the address independently and check server's response.
 
 `/v1/txproposals/:id/signatures/`: Sign a transaction proposal
 
@@ -200,17 +200,17 @@ Required Arguments:
  * signatures:  All Transaction's input signatures, in order of appearance.
   
 Returns:
- * TX Proposal object. (see [fields on the source code](https://github.com/fcash-project/fcash-wallet-service/blob/master/lib/model/txproposal.js)). `.status` is probably needed in this case.
+ * TX Proposal object. (see [fields on the source code](https://github.com/fcash-js/fcash-wallet-service/blob/master/lib/model/txproposal.js)). `.status` is probably needed in this case.
   
 `/v1/txproposals/:id/broadcast/`: Broadcast a transaction proposal
  
 Returns:
- * TX Proposal object. (see [fields on the source code](https://github.com/fcash-project/fcash-wallet-service/blob/master/lib/model/txproposal.js)). `.status` is probably needed in this case.
+ * TX Proposal object. (see [fields on the source code](https://github.com/fcash-js/fcash-wallet-service/blob/master/lib/model/txproposal.js)). `.status` is probably needed in this case.
   
 `/v1/txproposals/:id/rejections`: Reject a transaction proposal
  
 Returns:
- * TX Proposal object. (see [fields on the source code](https://github.com/fcash-project/fcash-wallet-service/blob/master/lib/model/txproposal.js)). `.status` is probably needed in this case.
+ * TX Proposal object. (see [fields on the source code](https://github.com/fcash-js/fcash-wallet-service/blob/master/lib/model/txproposal.js)). `.status` is probably needed in this case.
 
 `/v1/addresses/scan`: Start an address scan process looking for activity.
 
@@ -229,7 +229,7 @@ Required Arguments:
 `/v1/txproposals/:id/`: Deletes a transaction proposal. Only the creator can delete a TX Proposal, and only if it has no other signatures or rejections
 
  Returns:
- * TX Proposal object. (see [fields on the source code](https://github.com/fcash-project/fcash-wallet-service/blob/master/lib/model/txproposal.js)). `.id` is probably needed in this case.
+ * TX Proposal object. (see [fields on the source code](https://github.com/fcash-js/fcash-wallet-service/blob/master/lib/model/txproposal.js)). `.id` is probably needed in this case.
 
 `/v1/txconfirmations/:txid`: Unsubscribe from transaction `txid` and no longer listen to its confirmation.
 

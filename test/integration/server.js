@@ -3905,10 +3905,10 @@ describe('Wallet service', function() {
             });
           });
         });
-        it('should fail gracefully when fcore throws exception on raw tx creation', function(done) {
+        it('should fail gracefully when fcashBase throws exception on raw tx creation', function(done) {
           helpers.stubUtxos(server, wallet, 1,  function() {
-            var fcoreStub = sinon.stub(Fcash_[coin], 'Transaction');
-            fcoreStub.throws({
+            var fcashBaseStub = sinon.stub(Fcash_[coin], 'Transaction');
+            fcashBaseStub.throws({
               name: 'dummy',
               message: 'dummy exception'
             });
@@ -3922,7 +3922,7 @@ describe('Wallet service', function() {
             server.createTx(txOpts, function(err, tx) {
               should.exist(err);
               err.message.should.equal('dummy exception');
-              fcoreStub.restore();
+              fcashBaseStub.restore();
               done();
             });
           });
@@ -4003,9 +4003,9 @@ describe('Wallet service', function() {
             server.createTx(txOpts, function(err, tx) {
               should.not.exist(err);
               should.exist(tx);
-              var fcoreTx = tx.getFcashTx();
-              fcoreTx.outputs.length.should.equal(1);
-              fcoreTx.outputs[0].satoshis.should.equal(tx.amount);
+              var fcashBaseTx = tx.getFcashTx();
+              fcashBaseTx.outputs.length.should.equal(1);
+              fcashBaseTx.outputs[0].satoshis.should.equal(tx.amount);
               done();
             });
           });

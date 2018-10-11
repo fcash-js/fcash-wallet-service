@@ -32,7 +32,7 @@ describe('TxProposal', function() {
   });
 
   describe('#getFcashTx', function() {
-    it('should create a valid fcore ', function() {
+    it('should create a valid fcash-base ', function() {
       var txp = TxProposal.fromObj(aTXP());
       var t = txp.getFcashTx();
       should.exist(t);
