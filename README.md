@@ -15,7 +15,7 @@ FWS can usually be installed within minutes and accommodates all the needed infr
   
 See [fcash-wallet-client](https://github.com/fcash-project/fcash-wallet-client) for the *official* client library that communicates to FWS and verifies its response. Also check [fcash-wallet](https://github.com/fcash-project/fcash-wallet) for a simple CLI wallet implementation that relies on FWS.
 
-FWS is been used in production enviroments for [FcashApp Wallet](https://www.fcash.cash), [Bitpay App wallet](https://fcash.cash/wallet) and others.  
+FWS is been used in production enviroments for [FcashApp Wallet](https://www.fcash.cash), [FcashApp Wallet](https://fcash.cash/wallet) and others.  
 
 More about FWS at https://blog.fcash.cash/announcing-the-fcash-wallet-suite/
 
