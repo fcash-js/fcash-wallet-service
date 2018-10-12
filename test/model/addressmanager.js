@@ -20,7 +20,7 @@ describe('AddressManager', function() {
         version: '1.0.0',
         receiveAddressIndex: 2,
         changeAddressIndex: 0,
-        fcash-payIndex: 4
+        fcashpayIndex: 4
       };
       var am = AddressManager.fromObj(obj);
       am.derivationStrategy.should.equal('BIP45');
@@ -37,7 +37,7 @@ describe('AddressManager', function() {
     describe('#getCurrentAddressPath', function() {
       it('should return a valid BIP32 path for given index', function() {
         var am = AddressManager.create({
-          fcash-payIndex: 4,
+          fcashpayIndex: 4,
         });
         am.getCurrentAddressPath(false).should.equal('m/4/0/0');
         am.getCurrentAddressPath(true).should.equal('m/4/1/0');
@@ -51,7 +51,7 @@ describe('AddressManager', function() {
     describe('#getNewAddressPath', function() {
       it('should return a new valid BIP32 path for given index', function() {
         var am = AddressManager.create({
-          fcash-payIndex: 2,
+          fcashpayIndex: 2,
         });
         am.getNewAddressPath(false).should.equal('m/2/0/0');
         am.getNewAddressPath(true).should.equal('m/2/1/0');
@@ -93,10 +93,10 @@ describe('AddressManager', function() {
         am.getCurrentAddressPath(false).should.equal('m/0/0');
         am.getCurrentAddressPath(true).should.equal('m/1/0');
       });
-      it('should return address path independently of fcash-payIndex', function() {
+      it('should return address path independently of fcashpayIndex', function() {
         var am = AddressManager.create({
           derivationStrategy: 'BIP44',
-          fcash-payIndex: 4,
+          fcashpayIndex: 4,
         });
         am.getCurrentAddressPath(false).should.equal('m/0/0');
         am.getCurrentAddressPath(true).should.equal('m/1/0');

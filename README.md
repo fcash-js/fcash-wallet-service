@@ -46,12 +46,12 @@ FWS can be used with PM2 with the provided `app.js` script:
 
 # Security Considerations
  * Private keys are never sent to FWS. FcashApp store them locally.
- * Extended public keys are stored on FWS. This allows FWS to easily check wallet balance, send offline notifications to fcash-pay, etc.
- * During wallet creation, the initial fcash-pay creates a wallet secret that contains a private key. All fcash-pay need to prove they have the secret by signing their information with this private key when joining the wallet. The secret should be shared using secured channels.
- * A fcash-pay could join the wallet more than once, and there is no mechanism to prevent this. See [wallet](https://github.com/fcash-js/fcash-wallet)'s confirm command, for a method for confirming fcash-pay.
+ * Extended public keys are stored on FWS. This allows FWS to easily check wallet balance, send offline notifications to fcashpay, etc.
+ * During wallet creation, the initial fcashpay creates a wallet secret that contains a private key. All fcashpay need to prove they have the secret by signing their information with this private key when joining the wallet. The secret should be shared using secured channels.
+ * A fcashpay could join the wallet more than once, and there is no mechanism to prevent this. See [wallet](https://github.com/fcash-js/fcash-wallet)'s confirm command, for a method for confirming fcashpay.
  * All FWS responses are verified:
-  * Addresses and change addresses are derived independently and locally by the fcash-pay from their local data.
-  * TX Proposals templates are signed by fcash-pay and verified by others, so the FWS cannot create or tamper with them.
+  * Addresses and change addresses are derived independently and locally by the fcashpay from their local data.
+  * TX Proposals templates are signed by fcashpay and verified by others, so the FWS cannot create or tamper with them.
 
 # Using SSL
 
@@ -111,7 +111,7 @@ Returns:
  * proposalId
  * creatorName
  * message
- * actions array ['createdOn', 'type', 'FcashPayId', 'fcash-payName', 'comment']
+ * actions array ['createdOn', 'type', 'FcashPayId', 'fcashpayName', 'comment']
   
  
 `/v1/txproposals/`:  Get Wallet's pending transaction proposals and their status
@@ -154,24 +154,24 @@ Returns:
  * name: Name of the wallet 
  * m: Number of required peers to sign transactions 
  * n: Number of total peers on the wallet
- * pubKey: Wallet Creation Public key to check joining fcash-pay's signatures (the private key is unknown by FWS and must be communicated
+ * pubKey: Wallet Creation Public key to check joining fcashpay's signatures (the private key is unknown by FWS and must be communicated
   by the creator peer to other peers).
 
 Returns: 
  * walletId: Id of the new created wallet
 
 
-`/v1/wallets/:id/fcash-pay/`: Join a Wallet in creation
+`/v1/wallets/:id/fcashpay/`: Join a Wallet in creation
 
 Required Arguments:
  * walletId: Id of the wallet to join
  * name: FcashApp Name
- * xPubKey - Extended Public Key for this fcash-pay.
- * requestPubKey - Public Key used to check requests from this fcash-pay.
- * fcash-paySignature - Signature used by other fcash-pay to verify that the fcash-pay joining knows the wallet secret.
+ * xPubKey - Extended Public Key for this fcashpay.
+ * requestPubKey - Public Key used to check requests from this fcashpay.
+ * fcashpaySignature - Signature used by other fcashpay to verify that the fcashpay joining knows the wallet secret.
 
 Returns:
- * FcashPayId: Assigned ID of the fcash-pay (to be used on x-identity header)
+ * FcashPayId: Assigned ID of the fcashpay (to be used on x-identity header)
  * wallet: Object with wallet's information
 
 `/v1/txproposals/`: Add a new transaction proposal
@@ -215,7 +215,7 @@ Returns:
 `/v1/addresses/scan`: Start an address scan process looking for activity.
 
  Optional Arguments:
- * includeFcashAppBranches: Scan all fcash-pay branches following BIP45 recommendation (defaults to false). 
+ * includeFcashAppBranches: Scan all fcashpay branches following BIP45 recommendation (defaults to false). 
 
 `/v1/txconfirmations/`: Subscribe to receive push notifications when the specified transaction gets confirmed.
 Required Arguments:

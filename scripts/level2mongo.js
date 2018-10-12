@@ -54,9 +54,9 @@ function run(cb) {
 };
 
 function migrate(key, value, cb) {
-  if (key.match(/^fcash-pay!/)) {
+  if (key.match(/^fcashpay!/)) {
     value.FcashPayId = key.substring(key.indexOf('!') + 1);
-    mongo.db.collection('fcash-pay_lookup').insert(value, cb);
+    mongo.db.collection('fcashpay_lookup').insert(value, cb);
   } else if (key.match(/!addr!/)) {
     value.walletId = key.substring(2, key.indexOf('!addr'));
     value.network = Fcash.Address(value.address).toObject().network;

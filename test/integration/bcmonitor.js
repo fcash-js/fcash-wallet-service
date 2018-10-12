@@ -61,7 +61,7 @@ describe('Blockchain monitor', function() {
     });
   });
 
-  it('should notify fcash-pay of incoming txs', function(done) {
+  it('should notify fcashpay of incoming txs', function(done) {
     server.createAddress({}, function(err, address) {
       should.not.exist(err);
 
@@ -195,7 +195,7 @@ describe('Blockchain monitor', function() {
 
 
 
-  it('should not notify fcash-pay of incoming txs more than once', function(done) {
+  it('should not notify fcashpay of incoming txs more than once', function(done) {
     server.createAddress({}, function(err, address) {
       should.not.exist(err);
 
@@ -222,7 +222,7 @@ describe('Blockchain monitor', function() {
     });
   });
 
-  it('should notify fcash-pay of tx confirmation', function(done) {
+  it('should notify fcashpay of tx confirmation', function(done) {
     server.createAddress({}, function(err, address) {
       should.not.exist(err);
 

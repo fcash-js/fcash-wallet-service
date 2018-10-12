@@ -36,13 +36,13 @@ describe('Push notifications', function() {
           wallet = w;
 
           var i = 0;
-          async.eachSeries(w.fcash-pay, function(fcash-pay, next) {
-            helpers.getAuthServer(fcash-pay.id, function(server) {
+          async.eachSeries(w.fcashpay, function(fcashpay, next) {
+            helpers.getAuthServer(fcashpay.id, function(server) {
               async.parallel([
 
                 function(done) {
                   server.savePreferences({
-                    email: 'fcash-pay' + (++i) + '@domain.com',
+                    email: 'fcashpay' + (++i) + '@domain.com',
                     language: 'en',
                     unit: 'bit',
                   }, done);
@@ -86,7 +86,7 @@ describe('Push notifications', function() {
       });
     });
 
-    it('should build each notifications using preferences of the fcash-pay', function(done) {
+    it('should build each notifications using preferences of the fcashpay', function(done) {
       server.savePreferences({
         language: 'en',
         unit: 'bit',
@@ -139,7 +139,7 @@ describe('Push notifications', function() {
       });
     });
 
-    it('should notify fcash-pay when payment is received', function(done) {
+    it('should notify fcashpay when payment is received', function(done) {
       server.createAddress({}, function(err, address) {
         should.not.exist(err);
 
@@ -160,7 +160,7 @@ describe('Push notifications', function() {
       });
     });
 
-    it('should notify fcash-pay when tx is confirmed if they are subscribed', function(done) {
+    it('should notify fcashpay when tx is confirmed if they are subscribed', function(done) {
       server.createAddress({}, function(err, address) {
         should.not.exist(err);
 
@@ -191,13 +191,13 @@ describe('Push notifications', function() {
           server = s;
           wallet = w;
           var i = 0;
-          async.eachSeries(w.fcash-pay, function(fcash-pay, next) {
-            helpers.getAuthServer(fcash-pay.id, function(server) {
+          async.eachSeries(w.fcashpay, function(fcashpay, next) {
+            helpers.getAuthServer(fcashpay.id, function(server) {
               async.parallel([
 
                 function(done) {
                   server.savePreferences({
-                    email: 'fcash-pay' + (++i) + '@domain.com',
+                    email: 'fcashpay' + (++i) + '@domain.com',
                     language: 'en',
                     unit: 'bit',
                   }, done);
@@ -241,9 +241,9 @@ describe('Push notifications', function() {
       });
     });
 
-    it('should build each notifications using preferences of the fcash-pay', function(done) {
+    it('should build each notifications using preferences of the fcashpay', function(done) {
       server.savePreferences({
-        email: 'fcash-pay1@domain.com',
+        email: 'fcashpay1@domain.com',
         language: 'es',
         unit: 'btc',
       }, function(err) {
@@ -281,7 +281,7 @@ describe('Push notifications', function() {
       });
     });
 
-    it('should notify fcash-pay when payment is received', function(done) {
+    it('should notify fcashpay when payment is received', function(done) {
       server.createAddress({}, function(err, address) {
         should.not.exist(err);
 
@@ -325,7 +325,7 @@ describe('Push notifications', function() {
       });
     });
 
-    it('should notify fcash-pay a new tx proposal has been created', function(done) {
+    it('should notify fcashpay a new tx proposal has been created', function(done) {
       helpers.stubUtxos(server, wallet, [1, 1], function() {
         server.createAddress({}, function(err, address) {
           should.not.exist(err);
@@ -347,7 +347,7 @@ describe('Push notifications', function() {
       });
     });
 
-    it('should notify fcash-pay a tx has been finally rejected', function(done) {
+    it('should notify fcashpay a tx has been finally rejected', function(done) {
       helpers.stubUtxos(server, wallet, 1, function() {
         var txOpts = {
           outputs: [{
@@ -361,15 +361,15 @@ describe('Push notifications', function() {
         async.waterfall([
 
           function(next) {
-            helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(tx) {
+            helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(tx) {
               next(null, tx);
             });
           },
           function(txp, next) {
             txpId = txp.id;
             async.eachSeries(_.range(1, 3), function(i, next) {
-              var fcash-pay = TestData.fcash-pay[i];
-              helpers.getAuthServer(fcash-pay.id44btc, function(server) {
+              var fcashpay = TestData.fcashpay[i];
+              helpers.getAuthServer(fcashpay.id44btc, function(server) {
                 server.rejectTx({
                   txProposalId: txp.id,
                 }, next);
@@ -392,7 +392,7 @@ describe('Push notifications', function() {
       });
     });
 
-    it('should notify fcash-pay a new outgoing tx has been created', function(done) {
+    it('should notify fcashpay a new outgoing tx has been created', function(done) {
       helpers.stubUtxos(server, wallet, 1, function() {
         var txOpts = {
           outputs: [{
@@ -406,17 +406,17 @@ describe('Push notifications', function() {
         async.waterfall([
 
           function(next) {
-            helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(tx) {
+            helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(tx) {
               next(null, tx);
             });
           },
           function(t, next) {
             txp = t;
             async.eachSeries(_.range(1, 3), function(i, next) {
-              var fcash-pay = TestData.fcash-pay[i];
-              helpers.getAuthServer(fcash-pay.id44btc, function(s) {
+              var fcashpay = TestData.fcashpay[i];
+              helpers.getAuthServer(fcashpay.id44btc, function(s) {
                 server = s;
-                var signatures = helpers.clientSign(txp, fcash-pay.xPrivKey_44H_0H_0H);
+                var signatures = helpers.clientSign(txp, fcashpay.xPrivKey_44H_0H_0H);
                 server.signTx({
                   txProposalId: txp.id,
                   signatures: signatures,
@@ -493,13 +493,13 @@ describe('Push notifications', function() {
       });
     });
 
-    it('should notify fcash-pay when a new fcash-pay just joined into your wallet except the one who joined', function(done) {
+    it('should notify fcashpay when a new fcashpay just joined into your wallet except the one who joined', function(done) {
       async.eachSeries(_.range(3), function(i, next) {
         var FcashPayOpts = helpers.getSignedFcashAppOpts({
           walletId: walletId,
-          name: 'fcash-pay ' + (i + 1),
-          xPubKey: TestData.fcash-pay[i].xPubKey_44H_0H_0H,
-          requestPubKey: TestData.fcash-pay[i].pubKey_1H_0,
+          name: 'fcashpay ' + (i + 1),
+          xPubKey: TestData.fcashpay[i].xPubKey_44H_0H_0H,
+          requestPubKey: TestData.fcashpay[i].pubKey_1H_0,
           customData: 'custom data ' + (i + 1),
         });
 
@@ -521,34 +521,34 @@ describe('Push notifications', function() {
           var args = _.filter(_.map(calls, function(call) {
             return call.args[0];
           }), function(arg) {
-            return arg.body.notification.title == 'New fcash-pay';
+            return arg.body.notification.title == 'New fcashpay';
           });
 
           server.getWallet(null, function(err, wallet) {
             /*
-              First call - fcash-pay2 joined
-              fcash-pay2 should notify to fcash-pay1
-              fcash-pay2 should NOT be notifyed
+              First call - fcashpay2 joined
+              fcashpay2 should notify to fcashpay1
+              fcashpay2 should NOT be notifyed
             */
-            var hashedFcashAppIds = _.map(wallet.fcash-pay, function(fcash-pay) {
-              return sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(fcash-pay.id));
+            var hashedFcashAppIds = _.map(wallet.fcashpay, function(fcashpay) {
+              return sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(fcashpay.id));
             });
             hashedFcashAppIds[0].should.equal((args[0].body.data.FcashPayId));
             hashedFcashAppIds[1].should.not.equal((args[0].body.data.FcashPayId));
 
             /*
-              Second call - fcash-pay3 joined
-              fcash-pay3 should notify to fcash-pay1
+              Second call - fcashpay3 joined
+              fcashpay3 should notify to fcashpay1
             */
             hashedFcashAppIds[0].should.equal((args[1].body.data.FcashPayId));
 
             /*
-              Third call - fcash-pay3 joined
-              fcash-pay3 should notify to fcash-pay2
+              Third call - fcashpay3 joined
+              fcashpay3 should notify to fcashpay2
             */
             hashedFcashAppIds[1].should.equal((args[2].body.data.FcashPayId));
 
-            // fcash-pay3 should NOT notify any other fcash-pay
+            // fcashpay3 should NOT notify any other fcashpay
             hashedFcashAppIds[2].should.not.equal((args[1].body.data.FcashPayId));
             hashedFcashAppIds[2].should.not.equal((args[2].body.data.FcashPayId));
             done();

@@ -58,15 +58,15 @@ describe('Wallet service', function() {
   describe('#getInstance', function() {
     it('should get server instance', function() {
       var server = WalletService.getInstance({
-        clientVersion: 'bwc-2.9.0',
+        clientVersion: 'fwc-2.9.0',
       });
-      server.clientVersion.should.equal('bwc-2.9.0');
+      server.clientVersion.should.equal('fwc-2.9.0');
     });
     it('should not get server instance for FWC lower than v1.2', function() {
       var err;
       try {
         var server = WalletService.getInstance({
-          clientVersion: 'bwc-1.1.99',
+          clientVersion: 'fwc-1.1.99',
         });
       } catch (ex) {
         err = ex;
@@ -90,7 +90,7 @@ describe('Wallet service', function() {
         FcashPayId: '1234',
         message: 'hello world',
         signature: 'xxx',
-        clientVersion: 'bwc-1.1.99',
+        clientVersion: 'fwc-1.1.99',
       }, function(err, server) {
         should.exist(err);
         should.not.exist(server);
@@ -98,35 +98,35 @@ describe('Wallet service', function() {
         done();
       });
     });
-    it('should get server instance for existing fcash-pay', function(done) {
+    it('should get server instance for existing fcashpay', function(done) {
       helpers.createAndJoinWallet(1, 2, function(s, wallet) {
-        var xpriv = TestData.fcash-pay[0].xPrivKey;
-        var priv = TestData.fcash-pay[0].privKey_1H_0;
+        var xpriv = TestData.fcashpay[0].xPrivKey;
+        var priv = TestData.fcashpay[0].privKey_1H_0;
 
         var sig = helpers.signMessage('hello world', priv);
 
         WalletService.getInstanceWithAuth({
-          FcashPayId: wallet.fcash-pay[0].id,
+          FcashPayId: wallet.fcashpay[0].id,
           message: 'hello world',
           signature: sig,
-          clientVersion: 'bwc-2.0.0',
+          clientVersion: 'fwc-2.0.0',
           walletId: '123',
         }, function(err, server) {
           should.not.exist(err);
           server.walletId.should.equal(wallet.id);
-          server.FcashPayId.should.equal(wallet.fcash-pay[0].id);
-          server.clientVersion.should.equal('bwc-2.0.0');
+          server.FcashPayId.should.equal(wallet.fcashpay[0].id);
+          server.clientVersion.should.equal('fwc-2.0.0');
           done();
         });
       });
     });
 
-    it('should fail when requesting for non-existent fcash-pay', function(done) {
+    it('should fail when requesting for non-existent fcashpay', function(done) {
       var message = 'hello world';
       var opts = {
         FcashPayId: 'dummy',
         message: message,
-        signature: helpers.signMessage(message, TestData.fcash-pay[0].privKey_1H_0),
+        signature: helpers.signMessage(message, TestData.fcashpay[0].privKey_1H_0),
       };
       WalletService.getInstanceWithAuth(opts, function(err, server) {
         err.code.should.equal('NOT_AUTHORIZED');
@@ -138,7 +138,7 @@ describe('Wallet service', function() {
     it('should fail when message signature cannot be verified', function(done) {
       helpers.createAndJoinWallet(1, 2, function(s, wallet) {
         WalletService.getInstanceWithAuth({
-          FcashPayId: wallet.fcash-pay[0].id,
+          FcashPayId: wallet.fcashpay[0].id,
           message: 'dummy',
           signature: 'dummy',
         }, function(err, server) {
@@ -153,27 +153,27 @@ describe('Wallet service', function() {
       helpers.createAndJoinWallet(1, 1, function(s, wallet) {
         var collections = require('../../lib/storage').collections;
         s.storage.db.collection(collections.COPAYERS_LOOKUP).update({
-          FcashPayId: wallet.fcash-pay[0].id
+          FcashPayId: wallet.fcashpay[0].id
         }, {
           $set: {
             isSupportStaff: true
           }
         });
 
-        var xpriv = TestData.fcash-pay[0].xPrivKey;
-        var priv = TestData.fcash-pay[0].privKey_1H_0;
+        var xpriv = TestData.fcashpay[0].xPrivKey;
+        var priv = TestData.fcashpay[0].privKey_1H_0;
 
         var sig = helpers.signMessage('hello world', priv);
 
         WalletService.getInstanceWithAuth({
-          FcashPayId: wallet.fcash-pay[0].id,
+          FcashPayId: wallet.fcashpay[0].id,
           message: 'hello world',
           signature: sig,
           walletId: '123',
         }, function(err, server) {
           should.not.exist(err);
           server.walletId.should.equal('123');
-          server.FcashPayId.should.equal(wallet.fcash-pay[0].id);
+          server.FcashPayId.should.equal(wallet.fcashpay[0].id);
           done();
         });
       });
@@ -414,7 +414,7 @@ describe('Wallet service', function() {
         server.createWallet(opts, function(err) {
           if (!pair.valid) {
             should.exist(err);
-            err.message.should.equal('Invalid combination of required fcash-pay / total fcash-pay');
+            err.message.should.equal('Invalid combination of required fcashpay / total fcashpay');
           } else {
             should.not.exist(err);
           }
@@ -561,8 +561,8 @@ describe('Wallet service', function() {
         var FcashPayOpts = helpers.getSignedFcashAppOpts({
           walletId: walletId,
           name: 'me',
-          xPubKey: TestData.fcash-pay[0].xPubKey_44H_0H_0H,
-          requestPubKey: TestData.fcash-pay[0].pubKey_1H_0,
+          xPubKey: TestData.fcashpay[0].xPubKey_44H_0H_0H,
+          requestPubKey: TestData.fcashpay[0].pubKey_1H_0,
           customData: 'dummy custom data',
         });
         server.joinWallet(FcashPayOpts, function(err, result) {
@@ -571,11 +571,11 @@ describe('Wallet service', function() {
           helpers.getAuthServer(FcashPayId, function(server) {
             server.getWallet({}, function(err, wallet) {
               wallet.id.should.equal(walletId);
-              wallet.fcash-pay.length.should.equal(1);
-              var fcash-pay = wallet.fcash-pay[0];
-              fcash-pay.name.should.equal('me');
-              fcash-pay.id.should.equal(FcashPayId);
-              fcash-pay.customData.should.equal('dummy custom data');
+              wallet.fcashpay.length.should.equal(1);
+              var fcashpay = wallet.fcashpay[0];
+              fcashpay.name.should.equal('me');
+              fcashpay.id.should.equal(FcashPayId);
+              fcashpay.customData.should.equal('dummy custom data');
               server.getNotifications({}, function(err, notifications) {
                 should.not.exist(err);
                 var notif = _.find(notifications, {
@@ -584,7 +584,7 @@ describe('Wallet service', function() {
                 should.exist(notif);
                 notif.data.walletId.should.equal(walletId);
                 notif.data.FcashPayId.should.equal(FcashPayId);
-                notif.data.fcash-payName.should.equal('me');
+                notif.data.fcashpayName.should.equal('me');
 
                 notif = _.find(notifications, {
                   type: 'WalletComplete'
@@ -602,7 +602,7 @@ describe('Wallet service', function() {
           walletId: walletId,
           name: 'me',
           xPubKey: 'Ttub4pHUfyVU2mpjaM6YDGDJXWP6j5SL5AJzbViBuTaJEsybcrWZZoGkW7RSUSH9VRQKJtjqY2LfC2bF3FM4UqC1Ba9EP5M64SdTsv9575VAUwh',
-          requestPubKey: TestData.fcash-pay[0].pubKey_1H_0,
+          requestPubKey: TestData.fcashpay[0].pubKey_1H_0,
           customData: 'dummy custom data',
         });
         server.joinWallet(FcashPayOpts, function(err, result) {
@@ -616,7 +616,7 @@ describe('Wallet service', function() {
           walletId: walletId,
           name: 'me',
           xPubKey: 'tpubD6NzVbkrYhZ4Wbwwqah5kj1RGPK9BYeGbowB1jegxMoAkKbNhYUAcRTZ5fyxDcpjNXxziiy2ZkUQ3kR1ycPNycTD7Q2Dr6UfLcNTYHrzS3U',
-          requestPubKey: TestData.fcash-pay[0].pubKey_1H_0,
+          requestPubKey: TestData.fcashpay[0].pubKey_1H_0,
           customData: 'dummy custom data',
         });
         server.joinWallet(FcashPayOpts, function(err, result) {
@@ -629,8 +629,8 @@ describe('Wallet service', function() {
         var FcashPayOpts = helpers.getSignedFcashAppOpts({
           walletId: walletId,
           name: '',
-          xPubKey: TestData.fcash-pay[0].xPubKey_44H_0H_0H,
-          requestPubKey: TestData.fcash-pay[0].pubKey_1H_0,
+          xPubKey: TestData.fcashpay[0].xPubKey_44H_0H_0H,
+          requestPubKey: TestData.fcashpay[0].pubKey_1H_0,
         });
         server.joinWallet(FcashPayOpts, function(err, result) {
           should.not.exist(result);
@@ -646,7 +646,7 @@ describe('Wallet service', function() {
           name: 'me',
           xPubKey: 'dummy',
           requestPubKey: 'dummy',
-          fcash-paySignature: 'dummy',
+          fcashpaySignature: 'dummy',
         };
         server.joinWallet(FcashPayOpts, function(err) {
           should.exist(err);
@@ -659,8 +659,8 @@ describe('Wallet service', function() {
           var FcashPayOpts = helpers.getSignedFcashAppOpts({
             walletId: wallet.id,
             name: 'me',
-            xPubKey: TestData.fcash-pay[1].xPubKey_44H_0H_0H,
-            requestPubKey: TestData.fcash-pay[1].pubKey_1H_0,
+            xPubKey: TestData.fcashpay[1].xPubKey_44H_0H_0H,
+            requestPubKey: TestData.fcashpay[1].pubKey_1H_0,
           });
           server.joinWallet(FcashPayOpts, function(err) {
             should.exist(err);
@@ -675,8 +675,8 @@ describe('Wallet service', function() {
         var FcashPayOpts = helpers.getSignedFcashAppOpts({
           walletId: walletId,
           name: 'me',
-          xPubKey: TestData.fcash-pay[0].xPubKey_44H_0H_0H,
-          requestPubKey: TestData.fcash-pay[0].pubKey_1H_0,
+          xPubKey: TestData.fcashpay[0].xPubKey_44H_0H_0H,
+          requestPubKey: TestData.fcashpay[0].pubKey_1H_0,
           coin: 'bch',
         });
         server.joinWallet(FcashPayOpts, function(err) {
@@ -686,13 +686,13 @@ describe('Wallet service', function() {
         });
       });
 
-      it('should return fcash-pay in wallet error before full wallet', function(done) {
+      it('should return fcashpay in wallet error before full wallet', function(done) {
         helpers.createAndJoinWallet(1, 1, function(s, wallet) {
           var FcashPayOpts = helpers.getSignedFcashAppOpts({
             walletId: wallet.id,
             name: 'me',
-            xPubKey: TestData.fcash-pay[0].xPubKey_44H_0H_0H,
-            requestPubKey: TestData.fcash-pay[0].pubKey_1H_0,
+            xPubKey: TestData.fcashpay[0].xPubKey_44H_0H_0H,
+            requestPubKey: TestData.fcashpay[0].pubKey_1H_0,
           });
           server.joinWallet(FcashPayOpts, function(err) {
             should.exist(err);
@@ -706,8 +706,8 @@ describe('Wallet service', function() {
         var FcashPayOpts = helpers.getSignedFcashAppOpts({
           walletId: walletId,
           name: 'me',
-          xPubKey: TestData.fcash-pay[0].xPubKey_44H_0H_0H,
-          requestPubKey: TestData.fcash-pay[0].pubKey_1H_0,
+          xPubKey: TestData.fcashpay[0].xPubKey_44H_0H_0H,
+          requestPubKey: TestData.fcashpay[0].pubKey_1H_0,
         });
         server.joinWallet(FcashPayOpts, function(err) {
           should.not.exist(err);
@@ -724,8 +724,8 @@ describe('Wallet service', function() {
         var FcashPayOpts = helpers.getSignedFcashAppOpts({
           walletId: walletId,
           name: 'me',
-          xPubKey: TestData.fcash-pay[0].xPubKey_44H_0H_0H,
-          requestPubKey: TestData.fcash-pay[0].pubKey_1H_0,
+          xPubKey: TestData.fcashpay[0].xPubKey_44H_0H_0H,
+          requestPubKey: TestData.fcashpay[0].pubKey_1H_0,
           customData: 'dummy custom data',
           dryRun: true,
         });
@@ -736,11 +736,11 @@ describe('Wallet service', function() {
           result.wallet.id.should.equal(walletId);
           result.wallet.m.should.equal(1);
           result.wallet.n.should.equal(2);
-          result.wallet.fcash-pay.should.be.empty;
+          result.wallet.fcashpay.should.be.empty;
           server.storage.fetchWallet(walletId, function(err, wallet) {
             should.not.exist(err);
             wallet.id.should.equal(walletId);
-            wallet.fcash-pay.should.be.empty;
+            wallet.fcashpay.should.be.empty;
             done();
           });
         });
@@ -750,8 +750,8 @@ describe('Wallet service', function() {
         var FcashPayOpts = helpers.getSignedFcashAppOpts({
           walletId: walletId,
           name: 'me',
-          xPubKey: TestData.fcash-pay[0].xPubKey_44H_0H_0H,
-          requestPubKey: TestData.fcash-pay[0].pubKey_1H_0,
+          xPubKey: TestData.fcashpay[0].xPubKey_44H_0H_0H,
+          requestPubKey: TestData.fcashpay[0].pubKey_1H_0,
         });
         server.joinWallet(FcashPayOpts, function(err) {
           should.not.exist(err);
@@ -767,8 +767,8 @@ describe('Wallet service', function() {
             FcashPayOpts = helpers.getSignedFcashAppOpts({
               walletId: walletId,
               name: 'me',
-              xPubKey: TestData.fcash-pay[0].xPubKey_44H_0H_0H,
-              requestPubKey: TestData.fcash-pay[0].pubKey_1H_0,
+              xPubKey: TestData.fcashpay[0].xPubKey_44H_0H_0H,
+              requestPubKey: TestData.fcashpay[0].pubKey_1H_0,
             });
             server.joinWallet(FcashPayOpts, function(err) {
               should.exist(err);
@@ -784,9 +784,9 @@ describe('Wallet service', function() {
         var FcashPayOpts = {
           walletId: walletId,
           name: 'me',
-          xPubKey: TestData.fcash-pay[0].xPubKey_44H_0H_0H,
-          requestPubKey: TestData.fcash-pay[0].pubKey_1H_0,
-          fcash-paySignature: 'bad sign',
+          xPubKey: TestData.fcashpay[0].xPubKey_44H_0H_0H,
+          requestPubKey: TestData.fcashpay[0].pubKey_1H_0,
+          fcashpaySignature: 'bad sign',
         };
         server.joinWallet(FcashPayOpts, function(err) {
           err.message.should.equal('Bad request');
@@ -797,9 +797,9 @@ describe('Wallet service', function() {
       it('should fail to join with invalid xPubKey', function(done) {
         var FcashPayOpts = helpers.getSignedFcashAppOpts({
           walletId: walletId,
-          name: 'fcash-pay 1',
+          name: 'fcashpay 1',
           xPubKey: 'invalid',
-          requestPubKey: TestData.fcash-pay[0].pubKey_1H_0,
+          requestPubKey: TestData.fcashpay[0].pubKey_1H_0,
         });
         server.joinWallet(FcashPayOpts, function(err, result) {
           should.not.exist(result);
@@ -813,12 +813,12 @@ describe('Wallet service', function() {
         var FcashPayOpts = {
           walletId: walletId,
           name: 'me',
-          xPubKey: TestData.fcash-pay[0].xPubKey_44H_0H_0H,
-          requestPubKey: TestData.fcash-pay[0].pubKey_1H_0,
+          xPubKey: TestData.fcashpay[0].xPubKey_44H_0H_0H,
+          requestPubKey: TestData.fcashpay[0].pubKey_1H_0,
         };
         server.joinWallet(FcashPayOpts, function(err) {
           should.exist(err);
-          err.message.should.contain('argument fcash-paySignature missing');
+          err.message.should.contain('argument fcashpaySignature missing');
           done();
         });
       });
@@ -827,8 +827,8 @@ describe('Wallet service', function() {
         var FcashPayOpts = helpers.getSignedFcashAppOpts({
           walletId: walletId,
           name: 'me',
-          xPubKey: TestData.fcash-pay[0].xPubKey_44H_0H_0H,
-          requestPubKey: TestData.fcash-pay[0].pubKey_1H_0,
+          xPubKey: TestData.fcashpay[0].xPubKey_44H_0H_0H,
+          requestPubKey: TestData.fcashpay[0].pubKey_1H_0,
         });
         FcashPayOpts.name = 'me2';
         server.joinWallet(FcashPayOpts, function(err) {
@@ -837,7 +837,7 @@ describe('Wallet service', function() {
         });
       });
 
-      it('should set pkr and status = complete on last fcash-pay joining (2-3)', function(done) {
+      it('should set pkr and status = complete on last fcashpay joining (2-3)', function(done) {
         helpers.createAndJoinWallet(2, 3, function(server) {
           server.getWallet({}, function(err, wallet) {
             should.not.exist(err);
@@ -890,8 +890,8 @@ describe('Wallet service', function() {
           var FcashPayOpts = helpers.getSignedFcashAppOpts({
             walletId: walletId,
             name: 'me',
-            xPubKey: TestData.fcash-pay[0].xPubKey_44H_0H_0H,
-            requestPubKey: TestData.fcash-pay[0].pubKey_1H_0,
+            xPubKey: TestData.fcashpay[0].xPubKey_44H_0H_0H,
+            requestPubKey: TestData.fcashpay[0].pubKey_1H_0,
           });
           server.joinWallet(FcashPayOpts, function(err, result) {
             should.exist(err);
@@ -914,8 +914,8 @@ describe('Wallet service', function() {
           var FcashPayOpts = helpers.getSignedFcashAppOpts({
             walletId: walletId,
             name: 'me',
-            xPubKey: TestData.fcash-pay[0].xPubKey_45H,
-            requestPubKey: TestData.fcash-pay[0].pubKey_1H_0,
+            xPubKey: TestData.fcashpay[0].xPubKey_45H,
+            requestPubKey: TestData.fcashpay[0].pubKey_1H_0,
             supportBIP44AndP2PKH: false,
           });
           server.joinWallet(FcashPayOpts, function(err, result) {
@@ -945,7 +945,7 @@ describe('Wallet service', function() {
             feePerKb: 100e2,
           };
           async.eachSeries(_.range(2), function(i, next) {
-            helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function() {
+            helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function() {
               next();
             });
           }, done);
@@ -1009,7 +1009,7 @@ describe('Wallet service', function() {
                 feePerKb: 100e2,
               };
               async.eachSeries(_.range(2), function(i, next) {
-                helpers.createAndPublishTx(server2, txOpts, TestData.fcash-pay[1].privKey_1H_0, function() {
+                helpers.createAndPublishTx(server2, txOpts, TestData.fcashpay[1].privKey_1H_0, function() {
                   next();
                 });
               }, next);
@@ -1081,8 +1081,8 @@ describe('Wallet service', function() {
         should.exist(status);
         should.exist(status.wallet);
         status.wallet.name.should.equal(wallet.name);
-        should.exist(status.wallet.fcash-pay);
-        status.wallet.fcash-pay.length.should.equal(2);
+        should.exist(status.wallet.fcashpay);
+        status.wallet.fcashpay.length.should.equal(2);
         should.exist(status.balance);
         status.balance.totalAmount.should.equal(0);
         should.exist(status.preferences);
@@ -1092,13 +1092,13 @@ describe('Wallet service', function() {
         should.not.exist(status.wallet.publicKeyRing);
         should.not.exist(status.wallet.pubKey);
         should.not.exist(status.wallet.addressManager);
-        _.each(status.wallet.fcash-pay, function(fcash-pay) {
-          should.not.exist(fcash-pay.xPubKey);
-          should.not.exist(fcash-pay.requestPubKey);
-          should.not.exist(fcash-pay.signature);
-          should.not.exist(fcash-pay.requestPubKey);
-          should.not.exist(fcash-pay.addressManager);
-          should.not.exist(fcash-pay.customData);
+        _.each(status.wallet.fcashpay, function(fcashpay) {
+          should.not.exist(fcashpay.xPubKey);
+          should.not.exist(fcashpay.requestPubKey);
+          should.not.exist(fcashpay.signature);
+          should.not.exist(fcashpay.requestPubKey);
+          should.not.exist(fcashpay.addressManager);
+          should.not.exist(fcashpay.customData);
         });
         done();
       });
@@ -1112,14 +1112,14 @@ describe('Wallet service', function() {
         should.exist(status.wallet.publicKeyRing);
         should.exist(status.wallet.pubKey);
         should.exist(status.wallet.addressManager);
-        should.exist(status.wallet.fcash-pay[0].xPubKey);
-        should.exist(status.wallet.fcash-pay[0].requestPubKey);
-        should.exist(status.wallet.fcash-pay[0].signature);
-        should.exist(status.wallet.fcash-pay[0].requestPubKey);
-        should.exist(status.wallet.fcash-pay[0].customData);
-        // Do not return other fcash-pay's custom data
-        _.each(_.rest(status.wallet.fcash-pay), function(fcash-pay) {
-          should.not.exist(fcash-pay.customData);
+        should.exist(status.wallet.fcashpay[0].xPubKey);
+        should.exist(status.wallet.fcashpay[0].requestPubKey);
+        should.exist(status.wallet.fcashpay[0].signature);
+        should.exist(status.wallet.fcashpay[0].requestPubKey);
+        should.exist(status.wallet.fcashpay[0].customData);
+        // Do not return other fcashpay's custom data
+        _.each(_.rest(status.wallet.fcashpay), function(fcashpay) {
+          should.not.exist(fcashpay.customData);
         });
         done();
       });
@@ -1133,7 +1133,7 @@ describe('Wallet service', function() {
           }],
           feePerKb: 100e2
         };
-        helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(tx) {
+        helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(tx) {
           should.exist(tx);
           server.getStatus({}, function(err, status) {
             should.not.exist(err);
@@ -1163,7 +1163,7 @@ describe('Wallet service', function() {
       var message = 'hello world';
       var opts = {
         message: message,
-        signature: helpers.signMessage(message, TestData.fcash-pay[0].privKey_1H_0),
+        signature: helpers.signMessage(message, TestData.fcashpay[0].privKey_1H_0),
       };
       server.verifyMessageSignature(opts, function(err, isValid) {
         should.not.exist(err);
@@ -1172,13 +1172,13 @@ describe('Wallet service', function() {
       });
     });
 
-    it('should fail to verify message signature for different fcash-pay', function(done) {
+    it('should fail to verify message signature for different fcashpay', function(done) {
       var message = 'hello world';
       var opts = {
         message: message,
-        signature: helpers.signMessage(message, TestData.fcash-pay[0].privKey_1H_0),
+        signature: helpers.signMessage(message, TestData.fcashpay[0].privKey_1H_0),
       };
-      helpers.getAuthServer(wallet.fcash-pay[1].id, function(server) {
+      helpers.getAuthServer(wallet.fcashpay[1].id, function(server) {
         server.verifyMessageSignature(opts, function(err, isValid) {
           should.not.exist(err);
           isValid.should.be.false;
@@ -1490,7 +1490,7 @@ describe('Wallet service', function() {
         helpers.createAndJoinWallet(1, 1, function(s, w) {
           server = s;
           wallet = w;
-          w.fcash-pay[0].id.should.equal(TestData.fcash-pay[0].id44btc);
+          w.fcashpay[0].id.should.equal(TestData.fcashpay[0].id44btc);
           done();
         });
       });
@@ -1670,12 +1670,12 @@ describe('Wallet service', function() {
         });
       });
     });
-    it('should save preferences only for requesting fcash-pay', function(done) {
+    it('should save preferences only for requesting fcashpay', function(done) {
       server.savePreferences({
         email: 'dummy@dummy.com'
       }, function(err) {
         should.not.exist(err);
-        helpers.getAuthServer(wallet.fcash-pay[1].id, function(server2) {
+        helpers.getAuthServer(wallet.fcashpay[1].id, function(server2) {
           server2.getPreferences({}, function(err, preferences) {
             should.not.exist(err);
             should.not.exist(preferences.email);
@@ -1830,7 +1830,7 @@ describe('Wallet service', function() {
           }],
           feePerKb: 100e2,
         };
-        helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(txp) {
+        helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(txp) {
           blockchainExplorer.getUtxos = function(addresses, cb) {
             return cb(null, []);
           };
@@ -1865,11 +1865,11 @@ describe('Wallet service', function() {
       reqPrivKey = new Fcash.PrivateKey();
       var requestPubKey = reqPrivKey.toPublicKey();
 
-      var xPrivKey = TestData.fcash-pay[0].xPrivKey_44H_0H_0H;
+      var xPrivKey = TestData.fcashpay[0].xPrivKey_44H_0H_0H;
       var requestPubKeyStr = requestPubKey.toString();
       var sig = helpers.signRequestPubKey(requestPubKeyStr, xPrivKey);
 
-      var FcashPayId = Model.FcashApp._xPubToFcashAppId('btc', TestData.fcash-pay[0].xPubKey_44H_0H_0H);
+      var FcashPayId = Model.FcashApp._xPubToFcashAppId('btc', TestData.fcashpay[0].xPubKey_44H_0H_0H);
       opts = {
         FcashPayId: FcashPayId,
         requestPubKey: requestPubKeyStr,
@@ -1893,8 +1893,8 @@ describe('Wallet service', function() {
       it('should be able to re-gain access from xPrivKey', function(done) {
         ws.addAccess(opts, function(err, res) {
           should.not.exist(err);
-          res.wallet.fcash-pay[0].requestPubKeys.length.should.equal(2);
-          res.wallet.fcash-pay[0].requestPubKeys[0].selfSigned.should.equal(true);
+          res.wallet.fcashpay[0].requestPubKeys.length.should.equal(2);
+          res.wallet.fcashpay[0].requestPubKeys[0].selfSigned.should.equal(true);
 
           server.getBalance(res.wallet.walletId, function(err, bal) {
             should.not.exist(err);
@@ -3128,8 +3128,8 @@ describe('Wallet service', function() {
         var FcashPayOpts = helpers.getSignedFcashAppOpts({
           walletId: walletId,
           name: 'me',
-          xPubKey: TestData.fcash-pay[0].xPubKey_45H,
-          requestPubKey: TestData.fcash-pay[0].pubKey_1H_0,
+          xPubKey: TestData.fcashpay[0].xPubKey_45H,
+          requestPubKey: TestData.fcashpay[0].pubKey_1H_0,
         });
         server.joinWallet(FcashPayOpts, function(err, result) {
           should.not.exist(err);
@@ -3159,8 +3159,8 @@ describe('Wallet service', function() {
         var FcashPayOpts = helpers.getSignedFcashAppOpts({
           walletId: walletId,
           name: 'me',
-          xPubKey: TestData.fcash-pay[0].xPubKey_45H,
-          requestPubKey: TestData.fcash-pay[0].pubKey_1H_0,
+          xPubKey: TestData.fcashpay[0].xPubKey_45H,
+          requestPubKey: TestData.fcashpay[0].pubKey_1H_0,
         });
         server.joinWallet(FcashPayOpts, function(err, result) {
           should.not.exist(err);
@@ -3465,7 +3465,7 @@ describe('Wallet service', function() {
                 should.not.exist(err);
                 should.exist(tx);
                 tx.id.should.equal('123');
-                var publishOpts = helpers.getProposalSignatureOpts(tx, TestData.fcash-pay[0].privKey_1H_0);
+                var publishOpts = helpers.getProposalSignatureOpts(tx, TestData.fcashpay[0].privKey_1H_0);
                 server.publishTx(publishOpts, function(err, tx) {
                   should.not.exist(err);
                   should.exist(tx);
@@ -3501,7 +3501,7 @@ describe('Wallet service', function() {
               server.createTx(txOpts, function(err, txp) {
                 should.not.exist(err);
                 should.exist(txp);
-                var publishOpts = helpers.getProposalSignatureOpts(txp, TestData.fcash-pay[0].privKey_1H_0);
+                var publishOpts = helpers.getProposalSignatureOpts(txp, TestData.fcashpay[0].privKey_1H_0);
                 server.publishTx(publishOpts, function(err) {
                   should.not.exist(err);
                   server.getPendingTxs({}, function(err, txs) {
@@ -3527,7 +3527,7 @@ describe('Wallet service', function() {
               server.createTx(txOpts, function(err, txp) {
                 should.not.exist(err);
                 should.exist(txp);
-                var publishOpts = helpers.getProposalSignatureOpts(txp, TestData.fcash-pay[0].privKey_1H_0);
+                var publishOpts = helpers.getProposalSignatureOpts(txp, TestData.fcashpay[0].privKey_1H_0);
                 server.publishTx(publishOpts, function(err) {
                   should.exist(err);
                   err.code.should.equal('TX_NOT_FOUND');
@@ -3556,7 +3556,7 @@ describe('Wallet service', function() {
                 server.getNotifications({}, function(err, notifications) {
                   should.not.exist(err);
                   _.pluck(notifications, 'type').should.not.contain('NewTxProposal');
-                  var publishOpts = helpers.getProposalSignatureOpts(txp, TestData.fcash-pay[0].privKey_1H_0);
+                  var publishOpts = helpers.getProposalSignatureOpts(txp, TestData.fcashpay[0].privKey_1H_0);
                   server.publishTx(publishOpts, function(err) {
                     should.not.exist(err);
                     server.getNotifications({}, function(err, notifications) {
@@ -3630,7 +3630,7 @@ describe('Wallet service', function() {
 
                 var publishOpts = {
                   txProposalId: txp.id,
-                  proposalSignature: helpers.signMessage(txp.getRawTx(), TestData.fcash-pay[1].privKey_1H_0),
+                  proposalSignature: helpers.signMessage(txp.getRawTx(), TestData.fcashpay[1].privKey_1H_0),
                 }
 
                 server.publishTx(publishOpts, function(err) {
@@ -3670,11 +3670,11 @@ describe('Wallet service', function() {
                 txp2 = txp;
                 should.exist(txp1);
                 should.exist(txp2);
-                var publishOpts = helpers.getProposalSignatureOpts(txp1, TestData.fcash-pay[0].privKey_1H_0);
+                var publishOpts = helpers.getProposalSignatureOpts(txp1, TestData.fcashpay[0].privKey_1H_0);
                 server.publishTx(publishOpts, next);
               },
               function(txp, next) {
-                var publishOpts = helpers.getProposalSignatureOpts(txp2, TestData.fcash-pay[0].privKey_1H_0);
+                var publishOpts = helpers.getProposalSignatureOpts(txp2, TestData.fcashpay[0].privKey_1H_0);
                 server.publishTx(publishOpts, function(err) {
                   should.exist(err);
                   err.code.should.equal('UNAVAILABLE_UTXOS');
@@ -3694,7 +3694,7 @@ describe('Wallet service', function() {
               },
               function(txp3, next) {
                 should.exist(txp3);
-                var publishOpts = helpers.getProposalSignatureOpts(txp3, TestData.fcash-pay[0].privKey_1H_0);
+                var publishOpts = helpers.getProposalSignatureOpts(txp3, TestData.fcashpay[0].privKey_1H_0);
                 server.publishTx(publishOpts, next);
               },
               function(txp, next) {
@@ -3738,12 +3738,12 @@ describe('Wallet service', function() {
                 txp2 = txp;
                 should.exist(txp1);
                 should.exist(txp2);
-                var publishOpts = helpers.getProposalSignatureOpts(txp1, TestData.fcash-pay[0].privKey_1H_0);
+                var publishOpts = helpers.getProposalSignatureOpts(txp1, TestData.fcashpay[0].privKey_1H_0);
                 server.publishTx(publishOpts, next);
               },
               function(txp, next) {
                 // Sign & Broadcast txp1
-                var signatures = helpers.clientSign(txp, TestData.fcash-pay[0].xPrivKey_44H_0H_0H);
+                var signatures = helpers.clientSign(txp, TestData.fcashpay[0].xPrivKey_44H_0H_0H);
                 server.signTx({
                   txProposalId: txp.id,
                   signatures: signatures,
@@ -3762,7 +3762,7 @@ describe('Wallet service', function() {
                 });
               },
               function(next) {
-                var publishOpts = helpers.getProposalSignatureOpts(txp2, TestData.fcash-pay[0].privKey_1H_0);
+                var publishOpts = helpers.getProposalSignatureOpts(txp2, TestData.fcashpay[0].privKey_1H_0);
                 server.publishTx(publishOpts, function(err) {
                   should.exist(err);
                   err.code.should.equal('UNAVAILABLE_UTXOS');
@@ -3955,7 +3955,7 @@ describe('Wallet service', function() {
               }],
               feePerKb: 100e2,
             };
-            helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(tx) {
+            helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(tx) {
               server.getBalance({}, function(err, balance) {
                 should.not.exist(err);
                 balance.totalAmount.should.equal(2e8);
@@ -4019,10 +4019,10 @@ describe('Wallet service', function() {
               }],
               feePerKb: 100e2,
             };
-            helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(tx) {
+            helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(tx) {
               should.exist(tx);
               txOpts.outputs[0].amount = 0.8e8;
-              helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(tx) {
+              helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(tx) {
                 should.exist(tx);
                 server.getPendingTxs({}, function(err, txs) {
                   should.not.exist(err);
@@ -4047,7 +4047,7 @@ describe('Wallet service', function() {
               }],
               feePerKb: 100e2,
             };
-            helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(tx) {
+            helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(tx) {
               should.exist(tx);
               txOpts.outputs[0].amount = 1.8e8;
               server.createTx(txOpts, function(err, tx) {
@@ -4074,10 +4074,10 @@ describe('Wallet service', function() {
           var reqPrivKey = new Fcash.PrivateKey();
           var reqPubKey = reqPrivKey.toPublicKey().toString();
 
-          var xPrivKey = TestData.fcash-pay[0].xPrivKey_44H_0H_0H;
+          var xPrivKey = TestData.fcashpay[0].xPrivKey_44H_0H_0H;
 
           var accessOpts = {
-            FcashPayId: TestData.fcash-pay[0][idKey],
+            FcashPayId: TestData.fcashpay[0][idKey],
             requestPubKey: reqPubKey,
             signature: helpers.signRequestPubKey(reqPubKey, xPrivKey),
           };
@@ -4213,7 +4213,7 @@ describe('Wallet service', function() {
 
           function(next) {
             async.each(_.range(3), function(i, next) {
-                helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(tx) {
+                helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(tx) {
                   server.rejectTx({
                     txProposalId: tx.id,
                     reason: 'some reason',
@@ -4224,7 +4224,7 @@ describe('Wallet service', function() {
           },
           function(next) {
             // Allow a 4th tx
-            helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(tx) {
+            helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(tx) {
               server.rejectTx({
                 txProposalId: tx.id,
                 reason: 'some reason',
@@ -4241,7 +4241,7 @@ describe('Wallet service', function() {
           },
           function(next) {
             clock.tick((Defaults.BACKOFF_TIME + 1) * 1000);
-            helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(tx) {
+            helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(tx) {
               server.rejectTx({
                 txProposalId: tx.id,
                 reason: 'some reason',
@@ -4259,7 +4259,7 @@ describe('Wallet service', function() {
           },
           function(next) {
             clock.tick(2000);
-            helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(tx) {
+            helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(tx) {
               server.rejectTx({
                 txProposalId: tx.id,
                 reason: 'some reason',
@@ -4321,7 +4321,7 @@ describe('Wallet service', function() {
             feePerKb: 100e2,
             excludeUnconfirmedUtxos: true,
           };
-          helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(tx) {
+          helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(tx) {
             should.exist(tx);
             tx.inputs.length.should.equal(2);
             server.getBalance({}, function(err, balance) {
@@ -4742,9 +4742,9 @@ describe('Wallet service', function() {
             }],
             feePerKb: 100e2,
           };
-          helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(txp) {
+          helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(txp) {
             should.exist(txp);
-            var signatures = helpers.clientSign(txp, TestData.fcash-pay[0].xPrivKey_44H_0H_0H);
+            var signatures = helpers.clientSign(txp, TestData.fcashpay[0].xPrivKey_44H_0H_0H);
             server.signTx({
               txProposalId: txp.id,
               signatures: signatures,
@@ -4793,7 +4793,7 @@ describe('Wallet service', function() {
         note.walletId.should.equal(wallet.id);
         note.body.should.equal('note body');
         note.editedBy.should.equal(server.FcashPayId);
-        note.editedByName.should.equal('fcash-pay 1');
+        note.editedByName.should.equal('fcashpay 1');
         note.createdOn.should.equal(note.editedOn);
         server.getTxNote({
           txid: '123',
@@ -4821,7 +4821,7 @@ describe('Wallet service', function() {
           note.editedBy.should.equal(server.FcashPayId);
           note.createdOn.should.equal(note.editedOn);
           var creator = note.editedBy;
-          helpers.getAuthServer(wallet.fcash-pay[1].id, function(server) {
+          helpers.getAuthServer(wallet.fcashpay[1].id, function(server) {
             clock.tick(60 * 1000);
             server.editTxNote({
               txid: '123',
@@ -4854,9 +4854,9 @@ describe('Wallet service', function() {
           message: 'some message',
           feePerKb: 100e2,
         };
-        helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(txp) {
+        helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(txp) {
           should.exist(txp);
-          var signatures = helpers.clientSign(txp, TestData.fcash-pay[0].xPrivKey_44H_0H_0H);
+          var signatures = helpers.clientSign(txp, TestData.fcashpay[0].xPrivKey_44H_0H_0H);
           server.signTx({
             txProposalId: txp.id,
             signatures: signatures,
@@ -4885,7 +4885,7 @@ describe('Wallet service', function() {
         });
       });
     });
-    it('should share notes between fcash-pay', function(done) {
+    it('should share notes between fcashpay', function(done) {
       server.editTxNote({
         txid: '123',
         body: 'note body'
@@ -4898,7 +4898,7 @@ describe('Wallet service', function() {
           should.exist(note);
           note.editedBy.should.equal(server.FcashPayId);
           var creator = note.editedBy;
-          helpers.getAuthServer(wallet.fcash-pay[1].id, function(server) {
+          helpers.getAuthServer(wallet.fcashpay[1].id, function(server) {
             server.getTxNote({
               txid: '123',
             }, function(err, note) {
@@ -5412,7 +5412,7 @@ describe('Wallet service', function() {
           }],
           feePerKb: 100e2,
         };
-        helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(tx) {
+        helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(tx) {
           should.exist(tx);
           server.getSendMaxInfo({
             feePerKb: 10000,
@@ -5515,7 +5515,7 @@ describe('Wallet service', function() {
             }],
             feePerKb: 100e2,
           };
-          helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(tx) {
+          helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(tx) {
             should.exist(tx);
             txid = tx.id;
             done();
@@ -5542,8 +5542,8 @@ describe('Wallet service', function() {
             }, function(err, tx) {
               var actors = tx.getActors();
               actors.length.should.equal(1);
-              actors[0].should.equal(wallet.fcash-pay[0].id);
-              var action = tx.getActionBy(wallet.fcash-pay[0].id);
+              actors[0].should.equal(wallet.fcashpay[0].id);
+              var action = tx.getActionBy(wallet.fcashpay[0].id);
               action.type.should.equal('reject');
               action.comment.should.equal('some reason');
               done();
@@ -5579,7 +5579,7 @@ describe('Wallet service', function() {
           });
         },
         function(next) {
-          helpers.getAuthServer(wallet.fcash-pay[1].id, function(server) {
+          helpers.getAuthServer(wallet.fcashpay[1].id, function(server) {
             server.rejectTx({
               txProposalId: txid,
               reason: 'some other reason',
@@ -5610,7 +5610,7 @@ describe('Wallet service', function() {
               }],
               feePerKb: 100e2,
             };
-            helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(tx) {
+            helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(tx) {
               should.exist(tx);
               tx.addressType.should.equal('P2PKH');
               txid = tx.id;
@@ -5625,7 +5625,7 @@ describe('Wallet service', function() {
         server.getPendingTxs({}, function(err, txs) {
           var tx = txs[0];
           tx.id.should.equal(txid);
-          var signatures = helpers.clientSign(tx, TestData.fcash-pay[0].xPrivKey_44H_0H_0H);
+          var signatures = helpers.clientSign(tx, TestData.fcashpay[0].xPrivKey_44H_0H_0H);
           should.not.exist(tx.raw);
           server.signTx({
             txProposalId: txid,
@@ -5664,7 +5664,7 @@ describe('Wallet service', function() {
               }],
               feePerKb: 100e2,
             };
-            helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(tx) {
+            helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(tx) {
               should.exist(tx);
               txid = tx.id;
               done();
@@ -5678,7 +5678,7 @@ describe('Wallet service', function() {
           var tx = txs[0];
           tx.id.should.equal(txid);
 
-          var signatures = helpers.clientSign(tx, TestData.fcash-pay[0].xPrivKey_44H_0H_0H);
+          var signatures = helpers.clientSign(tx, TestData.fcashpay[0].xPrivKey_44H_0H_0H);
           server.signTx({
             txProposalId: txid,
             signatures: signatures,
@@ -5692,8 +5692,8 @@ describe('Wallet service', function() {
 
               var actors = tx.getActors();
               actors.length.should.equal(1);
-              actors[0].should.equal(wallet.fcash-pay[0].id);
-              tx.getActionBy(wallet.fcash-pay[0].id).type.should.equal('accept');
+              actors[0].should.equal(wallet.fcashpay[0].id);
+              tx.getActionBy(wallet.fcashpay[0].id).type.should.equal('accept');
 
               done();
             });
@@ -5701,11 +5701,11 @@ describe('Wallet service', function() {
         });
       });
 
-      it('should fail to sign with a xpriv from other fcash-pay', function(done) {
+      it('should fail to sign with a xpriv from other fcashpay', function(done) {
         server.getPendingTxs({}, function(err, txs) {
           var tx = txs[0];
           tx.id.should.equal(txid);
-          var signatures = helpers.clientSign(tx, TestData.fcash-pay[1].xPrivKey_44H_0H_0H);
+          var signatures = helpers.clientSign(tx, TestData.fcashpay[1].xPrivKey_44H_0H_0H);
           server.signTx({
             txProposalId: txid,
             signatures: signatures,
@@ -5721,7 +5721,7 @@ describe('Wallet service', function() {
           var tx = txs[0];
           tx.id.should.equal(txid);
 
-          var signatures = helpers.clientSign(tx, TestData.fcash-pay[0].xPrivKey_44H_0H_0H);
+          var signatures = helpers.clientSign(tx, TestData.fcashpay[0].xPrivKey_44H_0H_0H);
           signatures[0] = 1;
 
           server.signTx({
@@ -5756,7 +5756,7 @@ describe('Wallet service', function() {
           var tx = txs[0];
           tx.id.should.equal(txid);
 
-          var signatures = _.take(helpers.clientSign(tx, TestData.fcash-pay[0].xPrivKey_44H_0H_0H), tx.inputs.length - 1);
+          var signatures = _.take(helpers.clientSign(tx, TestData.fcashpay[0].xPrivKey_44H_0H_0H), tx.inputs.length - 1);
           server.signTx({
             txProposalId: txid,
             signatures: signatures,
@@ -5773,7 +5773,7 @@ describe('Wallet service', function() {
           var tx = txs[0];
           tx.id.should.equal(txid);
 
-          var signatures = helpers.clientSign(tx, TestData.fcash-pay[0].xPrivKey_44H_0H_0H);
+          var signatures = helpers.clientSign(tx, TestData.fcashpay[0].xPrivKey_44H_0H_0H);
           server.signTx({
             txProposalId: txid,
             signatures: signatures,
@@ -5796,7 +5796,7 @@ describe('Wallet service', function() {
           server.rejectTx({
             txProposalId: txid,
           }, function(err) {
-            var signatures = helpers.clientSign(tx, TestData.fcash-pay[0].xPrivKey_44H_0H_0H);
+            var signatures = helpers.clientSign(tx, TestData.fcashpay[0].xPrivKey_44H_0H_0H);
             server.signTx({
               txProposalId: txid,
               signatures: signatures,
@@ -5821,7 +5821,7 @@ describe('Wallet service', function() {
             });
           },
           function(next) {
-            helpers.getAuthServer(wallet.fcash-pay[1].id, function(server) {
+            helpers.getAuthServer(wallet.fcashpay[1].id, function(server) {
               server.rejectTx({
                 txProposalId: txid,
                 reason: 'some reason',
@@ -5839,12 +5839,12 @@ describe('Wallet service', function() {
             });
           },
           function(next) {
-            helpers.getAuthServer(wallet.fcash-pay[2].id, function(server) {
+            helpers.getAuthServer(wallet.fcashpay[2].id, function(server) {
               server.getTx({
                 txProposalId: txid
               }, function(err, tx) {
                 should.not.exist(err);
-                var signatures = helpers.clientSign(tx, TestData.fcash-pay[2].xPrivKey_44H_0H_0H);
+                var signatures = helpers.clientSign(tx, TestData.fcashpay[2].xPrivKey_44H_0H_0H);
                 server.signTx({
                   txProposalId: txid,
                   signatures: signatures,
@@ -5876,9 +5876,9 @@ describe('Wallet service', function() {
             message: 'some message',
             feePerKb: 100e2,
           };
-          helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(txp) {
+          helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(txp) {
             should.exist(txp);
-            var signatures = helpers.clientSign(txp, TestData.fcash-pay[0].xPrivKey_44H_0H_0H);
+            var signatures = helpers.clientSign(txp, TestData.fcashpay[0].xPrivKey_44H_0H_0H);
             server.signTx({
               txProposalId: txp.id,
               signatures: signatures,
@@ -5966,7 +5966,7 @@ describe('Wallet service', function() {
         }],
         feePerKb: 100e2,
       };
-      helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(txp) {
+      helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(txp) {
         server.getPendingTxs({}, function(err, txs) {
           should.not.exist(err);
           txs.length.should.equal(2);
@@ -5992,7 +5992,7 @@ describe('Wallet service', function() {
         }],
         feePerKb: 100e2,
       };
-      helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(txp) {
+      helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(txp) {
         should.exist(txp);
         server.broadcastTx({
           txProposalId: txp.id
@@ -6078,7 +6078,7 @@ describe('Wallet service', function() {
       });
     });
 
-    it('other fcash-pay should see pending proposal created by one fcash-pay', function(done) {
+    it('other fcashpay should see pending proposal created by one fcashpay', function(done) {
       var txOpts = {
         outputs: [{
           toAddress: '18PzpUFkFZE8zKWUPvfykkTxmB9oMR8qP7',
@@ -6087,9 +6087,9 @@ describe('Wallet service', function() {
         feePerKb: 100e2,
         message: 'some message',
       };
-      helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(txp) {
+      helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(txp) {
         should.exist(txp);
-        helpers.getAuthServer(wallet.fcash-pay[1].id, function(server2, wallet) {
+        helpers.getAuthServer(wallet.fcashpay[1].id, function(server2, wallet) {
           server2.getPendingTxs({}, function(err, txps) {
             should.not.exist(err);
             txps.length.should.equal(1);
@@ -6113,7 +6113,7 @@ describe('Wallet service', function() {
             feePerKb: 100e2,
             message: 'some message',
           };
-          helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(txp) {
+          helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(txp) {
             txpId = txp.id;
             should.exist(txp);
             next();
@@ -6129,7 +6129,7 @@ describe('Wallet service', function() {
           });
         },
         function(txp, next) {
-          var signatures = helpers.clientSign(txp, TestData.fcash-pay[0].xPrivKey_44H_0H_0H);
+          var signatures = helpers.clientSign(txp, TestData.fcashpay[0].xPrivKey_44H_0H_0H);
           server.signTx({
             txProposalId: txpId,
             signatures: signatures,
@@ -6148,7 +6148,7 @@ describe('Wallet service', function() {
             txp.isRejected().should.be.false;
             txp.isBroadcasted().should.be.false;
             txp.actions.length.should.equal(1);
-            var action = txp.getActionBy(wallet.fcash-pay[0].id);
+            var action = txp.getActionBy(wallet.fcashpay[0].id);
             action.type.should.equal('accept');
             server.getNotifications({}, function(err, notifications) {
               should.not.exist(err);
@@ -6159,8 +6159,8 @@ describe('Wallet service', function() {
           });
         },
         function(txp, next) {
-          helpers.getAuthServer(wallet.fcash-pay[1].id, function(server, wallet) {
-            var signatures = helpers.clientSign(txp, TestData.fcash-pay[1].xPrivKey_44H_0H_0H);
+          helpers.getAuthServer(wallet.fcashpay[1].id, function(server, wallet) {
+            var signatures = helpers.clientSign(txp, TestData.fcashpay[1].xPrivKey_44H_0H_0H);
             server.signTx({
               txProposalId: txpId,
               signatures: signatures,
@@ -6185,7 +6185,7 @@ describe('Wallet service', function() {
               var last = _.last(notifications);
               last.type.should.equal('TxProposalFinallyAccepted');
               last.walletId.should.equal(wallet.id);
-              last.creatorId.should.equal(wallet.fcash-pay[1].id);
+              last.creatorId.should.equal(wallet.fcashpay[1].id);
               last.data.txProposalId.should.equal(txp.id);
               done();
             });
@@ -6206,7 +6206,7 @@ describe('Wallet service', function() {
             feePerKb: 100e2,
             message: 'some message',
           };
-          helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(txp) {
+          helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(txp) {
             txpId = txp.id;
             should.exist(txp);
             next();
@@ -6239,14 +6239,14 @@ describe('Wallet service', function() {
             txp.isRejected().should.be.false;
             txp.isAccepted().should.be.false;
             txp.actions.length.should.equal(1);
-            var action = txp.getActionBy(wallet.fcash-pay[0].id);
+            var action = txp.getActionBy(wallet.fcashpay[0].id);
             action.type.should.equal('reject');
             action.comment.should.equal('just because');
             next();
           });
         },
         function(next) {
-          helpers.getAuthServer(wallet.fcash-pay[1].id, function(server, wallet) {
+          helpers.getAuthServer(wallet.fcashpay[1].id, function(server, wallet) {
             server.rejectTx({
               txProposalId: txpId,
               reason: 'some other reason'
@@ -6294,7 +6294,7 @@ describe('Wallet service', function() {
             feePerKb: 100e2,
             message: 'some message',
           };
-          helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(txp) {
+          helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(txp) {
             should.exist(txp);
             txpid = txp.id;
             done();
@@ -6314,7 +6314,7 @@ describe('Wallet service', function() {
       });
     });
     it('should get someone elses transaction proposal', function(done) {
-      helpers.getAuthServer(wallet.fcash-pay[1].id, function(server2, wallet) {
+      helpers.getAuthServer(wallet.fcashpay[1].id, function(server2, wallet) {
         server2.getTx({
           txProposalId: txpid
         }, function(err, res) {
@@ -6360,7 +6360,7 @@ describe('Wallet service', function() {
           };
           async.eachSeries(_.range(10), function(i, next) {
             clock.tick(10 * 1000);
-            helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(txp) {
+            helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(txp) {
               next();
             });
           }, function(err) {
@@ -6447,7 +6447,7 @@ describe('Wallet service', function() {
           };
           async.eachSeries(_.range(3), function(i, next) {
             clock.tick(25 * 1000);
-            helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(txp) {
+            helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(txp) {
               next();
             });
           }, function(err) {
@@ -6470,7 +6470,7 @@ describe('Wallet service', function() {
         walletIds[0].should.equal(wallet.id);
         var creators = _.uniq(_.compact(_.pluck(notifications, 'creatorId')));
         creators.length.should.equal(1);
-        creators[0].should.equal(wallet.fcash-pay[0].id);
+        creators[0].should.equal(wallet.fcashpay[0].id);
         done();
       });
     });
@@ -6559,7 +6559,7 @@ describe('Wallet service', function() {
         var newFcashApp = notifications[0];
         newFcashApp.type.should.equal('NewFcashApp');
         newFcashApp.walletId.should.equal(wallet.id);
-        newFcashApp.creatorId.should.equal(wallet.fcash-pay[0].id);
+        newFcashApp.creatorId.should.equal(wallet.fcashpay[0].id);
         done();
       });
     });
@@ -6567,7 +6567,7 @@ describe('Wallet service', function() {
       server.getPendingTxs({}, function(err, txs) {
         blockchainExplorer.broadcast = sinon.stub().callsArgWith(1, 'broadcast error');
         var tx = txs[0];
-        var signatures = helpers.clientSign(tx, TestData.fcash-pay[0].xPrivKey_44H_0H_0H);
+        var signatures = helpers.clientSign(tx, TestData.fcashpay[0].xPrivKey_44H_0H_0H);
         server.signTx({
           txProposalId: tx.id,
           signatures: signatures,
@@ -6606,7 +6606,7 @@ describe('Wallet service', function() {
     it('should notify sign, acceptance, and broadcast, and emit', function(done) {
       server.getPendingTxs({}, function(err, txs) {
         var tx = txs[2];
-        var signatures = helpers.clientSign(tx, TestData.fcash-pay[0].xPrivKey_44H_0H_0H);
+        var signatures = helpers.clientSign(tx, TestData.fcashpay[0].xPrivKey_44H_0H_0H);
         server.signTx({
           txProposalId: tx.id,
           signatures: signatures,
@@ -6633,7 +6633,7 @@ describe('Wallet service', function() {
     it('should notify sign, acceptance, and broadcast, and emit (with 3rd party broadcast', function(done) {
       server.getPendingTxs({}, function(err, txs) {
         var tx = txs[2];
-        var signatures = helpers.clientSign(tx, TestData.fcash-pay[0].xPrivKey_44H_0H_0H);
+        var signatures = helpers.clientSign(tx, TestData.fcashpay[0].xPrivKey_44H_0H_0H);
         server.signTx({
           txProposalId: tx.id,
           signatures: signatures,
@@ -6677,7 +6677,7 @@ describe('Wallet service', function() {
             feePerKb: 100e2,
             message: 'some message',
           };
-          helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function() {
+          helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function() {
             server.getPendingTxs({}, function(err, txs) {
               txp = txs[0];
               done();
@@ -6698,7 +6698,7 @@ describe('Wallet service', function() {
       });
     });
     it('should allow creator to remove a signed TX by himself', function(done) {
-      var signatures = helpers.clientSign(txp, TestData.fcash-pay[0].xPrivKey_44H_0H_0H);
+      var signatures = helpers.clientSign(txp, TestData.fcashpay[0].xPrivKey_44H_0H_0H);
       server.signTx({
         txProposalId: txp.id,
         signatures: signatures,
@@ -6719,7 +6719,7 @@ describe('Wallet service', function() {
       async.waterfall([
 
         function(next) {
-          var signatures = helpers.clientSign(txp, TestData.fcash-pay[0].xPrivKey_44H_0H_0H);
+          var signatures = helpers.clientSign(txp, TestData.fcashpay[0].xPrivKey_44H_0H_0H);
           server.signTx({
             txProposalId: txp.id,
             signatures: signatures,
@@ -6729,7 +6729,7 @@ describe('Wallet service', function() {
           });
         },
         function(next) {
-          helpers.getAuthServer(wallet.fcash-pay[1].id, function(server) {
+          helpers.getAuthServer(wallet.fcashpay[1].id, function(server) {
             server.rejectTx({
               txProposalId: txp.id,
             }, function(err) {
@@ -6739,7 +6739,7 @@ describe('Wallet service', function() {
           });
         },
         function(next) {
-          helpers.getAuthServer(wallet.fcash-pay[2].id, function(server) {
+          helpers.getAuthServer(wallet.fcashpay[2].id, function(server) {
             server.rejectTx({
               txProposalId: txp.id,
             }, function(err) {
@@ -6766,8 +6766,8 @@ describe('Wallet service', function() {
         },
       ]);
     });
-    it('should not allow non-creator fcash-pay to remove an unsigned TX ', function(done) {
-      helpers.getAuthServer(wallet.fcash-pay[1].id, function(server2) {
+    it('should not allow non-creator fcashpay to remove an unsigned TX ', function(done) {
+      helpers.getAuthServer(wallet.fcashpay[1].id, function(server2) {
         server2.removePendingTx({
           txProposalId: txp.id
         }, function(err) {
@@ -6780,9 +6780,9 @@ describe('Wallet service', function() {
         });
       });
     });
-    it('should not allow creator fcash-pay to remove a TX signed by other fcash-pay, in less than 24hrs', function(done) {
-      helpers.getAuthServer(wallet.fcash-pay[1].id, function(server2) {
-        var signatures = helpers.clientSign(txp, TestData.fcash-pay[1].xPrivKey_44H_0H_0H);
+    it('should not allow creator fcashpay to remove a TX signed by other fcashpay, in less than 24hrs', function(done) {
+      helpers.getAuthServer(wallet.fcashpay[1].id, function(server2) {
+        var signatures = helpers.clientSign(txp, TestData.fcashpay[1].xPrivKey_44H_0H_0H);
         server2.signTx({
           txProposalId: txp.id,
           signatures: signatures,
@@ -6798,9 +6798,9 @@ describe('Wallet service', function() {
         });
       });
     });
-    it('should allow creator fcash-pay to remove a TX rejected by other fcash-pay, in less than 24hrs', function(done) {
-      helpers.getAuthServer(wallet.fcash-pay[1].id, function(server2) {
-        var signatures = helpers.clientSign(txp, TestData.fcash-pay[1].xPrivKey_44H_0H_0H);
+    it('should allow creator fcashpay to remove a TX rejected by other fcashpay, in less than 24hrs', function(done) {
+      helpers.getAuthServer(wallet.fcashpay[1].id, function(server2) {
+        var signatures = helpers.clientSign(txp, TestData.fcashpay[1].xPrivKey_44H_0H_0H);
         server2.rejectTx({
           txProposalId: txp.id,
           signatures: signatures,
@@ -6815,9 +6815,9 @@ describe('Wallet service', function() {
         });
       });
     });
-    it('should allow creator fcash-pay to remove a TX signed by other fcash-pay, after 24hrs', function(done) {
-      helpers.getAuthServer(wallet.fcash-pay[1].id, function(server2) {
-        var signatures = helpers.clientSign(txp, TestData.fcash-pay[1].xPrivKey_44H_0H_0H);
+    it('should allow creator fcashpay to remove a TX signed by other fcashpay, after 24hrs', function(done) {
+      helpers.getAuthServer(wallet.fcashpay[1].id, function(server2) {
+        var signatures = helpers.clientSign(txp, TestData.fcashpay[1].xPrivKey_44H_0H_0H);
         server2.signTx({
           txProposalId: txp.id,
           signatures: signatures,
@@ -6840,9 +6840,9 @@ describe('Wallet service', function() {
         });
       });
     });
-    it('should allow other fcash-pay to remove a TX signed, after 24hrs', function(done) {
-      helpers.getAuthServer(wallet.fcash-pay[1].id, function(server2) {
-        var signatures = helpers.clientSign(txp, TestData.fcash-pay[1].xPrivKey_44H_0H_0H);
+    it('should allow other fcashpay to remove a TX signed, after 24hrs', function(done) {
+      helpers.getAuthServer(wallet.fcashpay[1].id, function(server2) {
+        var signatures = helpers.clientSign(txp, TestData.fcashpay[1].xPrivKey_44H_0H_0H);
         server2.signTx({
           txProposalId: txp.id,
           signatures: signatures,
@@ -7006,10 +7006,10 @@ describe('Wallet service', function() {
             "test": true
           },
         };
-        helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(tx) {
+        helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(tx) {
           should.exist(tx);
 
-          var signatures = helpers.clientSign(tx, TestData.fcash-pay[0].xPrivKey_44H_0H_0H);
+          var signatures = helpers.clientSign(tx, TestData.fcashpay[0].xPrivKey_44H_0H_0H);
           server.signTx({
             txProposalId: tx.id,
             signatures: signatures,
@@ -7057,7 +7057,7 @@ describe('Wallet service', function() {
                 tx.addressTo.should.equal(external);
                 tx.actions.length.should.equal(1);
                 tx.actions[0].type.should.equal('accept');
-                tx.actions[0].fcash-payName.should.equal('fcash-pay 1');
+                tx.actions[0].fcashpayName.should.equal('fcashpay 1');
                 tx.outputs[0].address.should.equal(external);
                 tx.outputs[0].amount.should.equal(0.5e8);
                 should.not.exist(tx.outputs[0].message);
@@ -8040,7 +8040,7 @@ describe('Wallet service', function() {
           });
         });
       });
-      it('should scan main addresses & fcash-pay addresses', function(done) {
+      it('should scan main addresses & fcashpay addresses', function(done) {
         helpers.stubAddressActivity(
           ['39AA1Y2VvPJhV3RFbc7cKbUax1WgkPwweR', // m/2147483647/0/0
             '3MzGaz4KKX66w8ShKaR536ZqzVvREBqqYu', // m/2147483647/1/0
@@ -8166,9 +8166,9 @@ describe('Wallet service', function() {
         should.not.exist(err);
         var FcashPayOpts = helpers.getSignedFcashAppOpts({
           walletId: walletId,
-          name: 'fcash-pay 1',
-          xPubKey: TestData.fcash-pay[3].xPubKey_45H,
-          requestPubKey: TestData.fcash-pay[3].pubKey_1H_0,
+          name: 'fcashpay 1',
+          xPubKey: TestData.fcashpay[3].xPubKey_45H,
+          requestPubKey: TestData.fcashpay[3].pubKey_1H_0,
         });
         server.joinWallet(FcashPayOpts, function(err, result) {
           should.not.exist(err);
@@ -8231,8 +8231,8 @@ describe('Wallet service', function() {
       });
     });
 
-    it('should subscribe fcash-pay to push notifications service', function(done) {
-      helpers.getAuthServer(wallet.fcash-pay[0].id, function(server) {
+    it('should subscribe fcashpay to push notifications service', function(done) {
+      helpers.getAuthServer(wallet.fcashpay[0].id, function(server) {
         should.exist(server);
         server.pushNotificationsSubscribe({
           token: 'DEVICE_TOKEN',
@@ -8240,7 +8240,7 @@ describe('Wallet service', function() {
           platform: 'Android',
         }, function(err) {
           should.not.exist(err);
-          server.storage.fetchPushNotificationSubs(wallet.fcash-pay[0].id, function(err, subs) {
+          server.storage.fetchPushNotificationSubs(wallet.fcashpay[0].id, function(err, subs) {
             should.not.exist(err);
             should.exist(subs);
             subs.length.should.equal(1);
@@ -8253,8 +8253,8 @@ describe('Wallet service', function() {
         });
       });
     });
-    it('should allow multiple subscriptions for the same fcash-pay', function(done) {
-      helpers.getAuthServer(wallet.fcash-pay[0].id, function(server) {
+    it('should allow multiple subscriptions for the same fcashpay', function(done) {
+      helpers.getAuthServer(wallet.fcashpay[0].id, function(server) {
         should.exist(server);
         server.pushNotificationsSubscribe({
           token: 'DEVICE_TOKEN',
@@ -8267,7 +8267,7 @@ describe('Wallet service', function() {
             platform: 'iOS',
           }, function(err) {
             should.not.exist(err);
-            server.storage.fetchPushNotificationSubs(wallet.fcash-pay[0].id, function(err, subs) {
+            server.storage.fetchPushNotificationSubs(wallet.fcashpay[0].id, function(err, subs) {
               should.not.exist(err);
               should.exist(subs);
               subs.length.should.equal(2);
@@ -8278,8 +8278,8 @@ describe('Wallet service', function() {
       });
     });
 
-    it('should unsubscribe fcash-pay to push notifications service', function(done) {
-      helpers.getAuthServer(wallet.fcash-pay[0].id, function(server) {
+    it('should unsubscribe fcashpay to push notifications service', function(done) {
+      helpers.getAuthServer(wallet.fcashpay[0].id, function(server) {
         should.exist(server);
         async.series([
 
@@ -8303,7 +8303,7 @@ describe('Wallet service', function() {
             }, next);
           },
           function(next) {
-            server.storage.fetchPushNotificationSubs(wallet.fcash-pay[0].id, function(err, subs) {
+            server.storage.fetchPushNotificationSubs(wallet.fcashpay[0].id, function(err, subs) {
               should.not.exist(err);
               should.exist(subs);
               subs.length.should.equal(1);
@@ -8313,14 +8313,14 @@ describe('Wallet service', function() {
             });
           },
           function(next) {
-            helpers.getAuthServer(wallet.fcash-pay[1].id, function(server) {
+            helpers.getAuthServer(wallet.fcashpay[1].id, function(server) {
               server.pushNotificationsUnsubscribe({
                 token: 'DEVICE_TOKEN'
               }, next);
             });
           },
           function(next) {
-            server.storage.fetchPushNotificationSubs(wallet.fcash-pay[0].id, function(err, subs) {
+            server.storage.fetchPushNotificationSubs(wallet.fcashpay[0].id, function(err, subs) {
               should.not.exist(err);
               should.exist(subs);
               subs.length.should.equal(1);
@@ -8347,14 +8347,14 @@ describe('Wallet service', function() {
       });
     });
 
-    it('should subscribe fcash-pay to a tx confirmation', function(done) {
-      helpers.getAuthServer(wallet.fcash-pay[0].id, function(server) {
+    it('should subscribe fcashpay to a tx confirmation', function(done) {
+      helpers.getAuthServer(wallet.fcashpay[0].id, function(server) {
         should.exist(server);
         server.txConfirmationSubscribe({
           txid: '123',
         }, function(err) {
           should.not.exist(err);
-          server.storage.fetchActiveTxConfirmationSubs(wallet.fcash-pay[0].id, function(err, subs) {
+          server.storage.fetchActiveTxConfirmationSubs(wallet.fcashpay[0].id, function(err, subs) {
             should.not.exist(err);
             should.exist(subs);
             subs.length.should.equal(1);
@@ -8367,7 +8367,7 @@ describe('Wallet service', function() {
       });
     });
     it('should overwrite last subscription', function(done) {
-      helpers.getAuthServer(wallet.fcash-pay[0].id, function(server) {
+      helpers.getAuthServer(wallet.fcashpay[0].id, function(server) {
         should.exist(server);
         server.txConfirmationSubscribe({
           txid: '123',
@@ -8376,7 +8376,7 @@ describe('Wallet service', function() {
             txid: '123',
           }, function(err) {
             should.not.exist(err);
-            server.storage.fetchActiveTxConfirmationSubs(wallet.fcash-pay[0].id, function(err, subs) {
+            server.storage.fetchActiveTxConfirmationSubs(wallet.fcashpay[0].id, function(err, subs) {
               should.not.exist(err);
               should.exist(subs);
               subs.length.should.equal(1);
@@ -8387,8 +8387,8 @@ describe('Wallet service', function() {
       });
     });
 
-    it('should unsubscribe fcash-pay to the specified tx', function(done) {
-      helpers.getAuthServer(wallet.fcash-pay[0].id, function(server) {
+    it('should unsubscribe fcashpay to the specified tx', function(done) {
+      helpers.getAuthServer(wallet.fcashpay[0].id, function(server) {
         should.exist(server);
         async.series([
 
@@ -8408,7 +8408,7 @@ describe('Wallet service', function() {
             }, next);
           },
           function(next) {
-            server.storage.fetchActiveTxConfirmationSubs(wallet.fcash-pay[0].id, function(err, subs) {
+            server.storage.fetchActiveTxConfirmationSubs(wallet.fcashpay[0].id, function(err, subs) {
               should.not.exist(err);
               should.exist(subs);
               subs.length.should.equal(1);
@@ -8418,14 +8418,14 @@ describe('Wallet service', function() {
             });
           },
           function(next) {
-            helpers.getAuthServer(wallet.fcash-pay[1].id, function(server) {
+            helpers.getAuthServer(wallet.fcashpay[1].id, function(server) {
               server.txConfirmationUnsubscribe({
                 txid: '456'
               }, next);
             });
           },
           function(next) {
-            server.storage.fetchActiveTxConfirmationSubs(wallet.fcash-pay[0].id, function(err, subs) {
+            server.storage.fetchActiveTxConfirmationSubs(wallet.fcashpay[0].id, function(err, subs) {
               should.not.exist(err);
               should.exist(subs);
               subs.length.should.equal(1);
@@ -8487,9 +8487,9 @@ describe('Wallet service', function() {
           feePerKb: 100e2,
           message: 'some message',
         };
-        helpers.createAndPublishTx(server, txOpts, TestData.fcash-pay[0].privKey_1H_0, function(txp) {
+        helpers.createAndPublishTx(server, txOpts, TestData.fcashpay[0].privKey_1H_0, function(txp) {
           should.exist(txp);
-          var signatures = helpers.clientSign(txp, TestData.fcash-pay[0].xPrivKey_44H_0H_0H);
+          var signatures = helpers.clientSign(txp, TestData.fcashpay[0].xPrivKey_44H_0H_0H);
           server.signTx({
             txProposalId: txp.id,
             signatures: signatures,
@@ -8552,13 +8552,13 @@ describe('Wallet service', function() {
       helpers.createAndJoinWallet(1, 1, function(s, w) {
         server.btc = s;
         wallet.btc = w;
-        w.fcash-pay[0].id.should.equal(TestData.fcash-pay[0].id44btc);
+        w.fcashpay[0].id.should.equal(TestData.fcashpay[0].id44btc);
         helpers.createAndJoinWallet(1, 1, {
           coin: 'bch'
         }, function(s, w) {
           server.bch = s;
           wallet.bch = w;
-          w.fcash-pay[0].id.should.equal(TestData.fcash-pay[0].id44bch);
+          w.fcashpay[0].id.should.equal(TestData.fcashpay[0].id44bch);
           done();
         });
       });

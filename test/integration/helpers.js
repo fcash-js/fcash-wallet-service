@@ -34,7 +34,7 @@ var useMongoDb = !!process.env.USE_MONGO_DB;
 
 var helpers = {};
 
-helpers.CLIENT_VERSION = 'bwc-2.0.0';
+helpers.CLIENT_VERSION = 'fwc-2.0.0';
 
 helpers.before = function(cb) {
   function getDb(cb) {
@@ -125,7 +125,7 @@ helpers._generateFcashAppTestData = function() {
     'xprv9s21ZrQH143K2wcRMP75tAEL5JnUx4xU2AbUBQzVVUDP7DHZJkjF3kaRE7tcnPLLLL9PGjYTWTJmCQPaQ4GGzgWEUFJ6snwJG9YnQHBFRNR'
   ];
 
-  console.log('var fcash-pay = [');
+  console.log('var fcashpay = [');
   _.each(xPrivKeys, function(xPrivKeyStr, c) {
     var xpriv = Fcash.HDPrivateKey(xPrivKeyStr);
     var xpub = Fcash.HDPublicKey(xpriv);
@@ -163,7 +163,7 @@ helpers._generateFcashAppTestData = function() {
 
 helpers.getSignedFcashAppOpts = function(opts) {
   var hash = WalletService._getFcashAppHash(opts.name, opts.xPubKey, opts.requestPubKey);
-  opts.fcash-paySignature = helpers.signMessage(hash, TestData.keyPair.priv);
+  opts.fcashpaySignature = helpers.signMessage(hash, TestData.keyPair.priv);
   return opts;
 };
 
@@ -194,20 +194,20 @@ helpers.createAndJoinWallet = function(m, n, opts, cb) {
     if (err) return cb(err);
 
     async.each(_.range(n), function(i, cb) {
-      var fcash-payData = TestData.fcash-pay[i + offset];
+      var fcashpayData = TestData.fcashpay[i + offset];
 
 
-    var pub = (_.isBoolean(opts.supportBIP44AndP2PKH) && !opts.supportBIP44AndP2PKH) ? fcash-payData.xPubKey_45H : fcash-payData.xPubKey_44H_0H_0H;
+    var pub = (_.isBoolean(opts.supportBIP44AndP2PKH) && !opts.supportBIP44AndP2PKH) ? fcashpayData.xPubKey_45H : fcashpayData.xPubKey_44H_0H_0H;
 
     if (opts.network == 'testnet') 
-      pub = fcash-payData.xPubKey_44H_0H_0Ht;
+      pub = fcashpayData.xPubKey_44H_0H_0Ht;
 
       var FcashPayOpts = helpers.getSignedFcashAppOpts({
         walletId: walletId,
         coin: opts.coin,
-        name: 'fcash-pay ' + (i + 1),
+        name: 'fcashpay ' + (i + 1),
         xPubKey: pub,
-        requestPubKey: fcash-payData.pubKey_1H_0,
+        requestPubKey: fcashpayData.pubKey_1H_0,
         customData: 'custom data ' + (i + 1),
       });
       if (_.isBoolean(opts.supportBIP44AndP2PKH))

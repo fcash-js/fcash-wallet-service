@@ -3,7 +3,7 @@ var keyPair = {
   pub: '026092daeed8ecb2212869395770e956ffc9bf453f803e700f64ffa70c97a00d80',
 };
 
-var fcash_pay = [{
+var fcashpay = [{
   id44btc: '626452e5e0e35df4d9ae4d3e60653c9ae9a814f00c84dc40f5887069b18e2110',
   id44bch: '671fee02a6c1c4de2e2609f9f9a6180dc03acfff6b759fe0b13a616ed4880065',
   id45: 'e7467366d5754be2b7d386c9737ab87214c26314bdc3489702e09c719be1bdb7',
@@ -267,5 +267,5 @@ var history = [{
 
 
 module.exports.keyPair   = keyPair;
-module.exports.fcash_pay = fcash_pay;
+module.exports.fcashpay = fcashpay;
 module.exports.history   = history;
