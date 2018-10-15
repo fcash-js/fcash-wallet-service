@@ -2,11 +2,11 @@
 
 var should = require('chai').should();
 var proxyquire = require('proxyquire');
-var fcashBase = require('fcash-lib');
+var bitcore = require('fcash-lib');
 var sinon = require('sinon');
-var Service = require('../fcashnode');
+var Service = require('../bitcorenode');
 
-describe('Fcash Node Service', function() {
+describe('Bitcore Node Service', function() {
   describe('#constructor', function() {
     it('https settings from node', function() {
       var node = {
@@ -26,7 +26,7 @@ describe('Fcash Node Service', function() {
         key: 'key',
         cert: 'cert'
       });
-      service.fwsPort.should.equal(3232);
+      service.bwsPort.should.equal(3232);
       service.messageBrokerPort.should.equal(3380);
       service.lockerPort.should.equal(3231);
     });
@@ -46,7 +46,7 @@ describe('Fcash Node Service', function() {
         key: 'key',
         cert: 'cert'
       });
-      service.fwsPort.should.equal(3232);
+      service.bwsPort.should.equal(3232);
       service.messageBrokerPort.should.equal(3380);
       service.lockerPort.should.equal(3231);
     });
@@ -54,18 +54,18 @@ describe('Fcash Node Service', function() {
       var node = {};
       var options = {
         node: node,
-        fwsPort: 1000,
+        bwsPort: 1000,
         messageBrokerPort: 1001,
         lockerPort: 1002
       };
       var service = new Service(options);
-      service.fwsPort.should.equal(1000);
+      service.bwsPort.should.equal(1000);
       service.messageBrokerPort.should.equal(1001);
       service.lockerPort.should.equal(1002);
     });
   });
   describe('#readHttpsOptions', function() {
-    var TestService = proxyquire('../fcashBasenode', {
+    var TestService = proxyquire('../bitcorenode', {
       fs: {
         readFileSync: function(arg) {
           return arg;
@@ -109,7 +109,7 @@ describe('Fcash Node Service', function() {
     it('livenet local insight', function() {
       var options = {
         node: {
-          network: fcashBase.Networks.livenet,
+          network: bitcore.Networks.livenet,
           port: 3001
         }
       };
@@ -124,7 +124,7 @@ describe('Fcash Node Service', function() {
     it('testnet local insight', function() {
       var options = {
         node: {
-          network: fcashBase.Networks.testnet,
+          network: bitcore.Networks.testnet,
           port: 3001
         }
       };
@@ -144,7 +144,7 @@ describe('Fcash Node Service', function() {
       function TestWSApp() {}
       TestWSApp.prototype.start = sinon.stub().callsArg(2);
       var listen = sinon.stub().callsArg(1);
-      var TestService = proxyquire('../fcashBasenode', {
+      var TestService = proxyquire('../bitcorenode', {
         '../lib/expressapp': TestExpressApp,
         '../lib/wsapp': TestWSApp,
         'http': {
@@ -155,7 +155,7 @@ describe('Fcash Node Service', function() {
       });
       var options = {
         node: {
-          fwsPort: 3232
+          bwsPort: 3232
         }
       };
       var service = new TestService(options);
@@ -174,7 +174,7 @@ describe('Fcash Node Service', function() {
       function TestWSApp() {}
       TestWSApp.prototype.start = sinon.stub().callsArg(2);
       var listen = sinon.stub().callsArgWith(1, new Error('test'));
-      var TestService = proxyquire('../fcashBasenode', {
+      var TestService = proxyquire('../bitcorenode', {
         '../lib/expressapp': TestExpressApp,
         '../lib/wsapp': TestWSApp,
         'http': {
@@ -188,7 +188,7 @@ describe('Fcash Node Service', function() {
       });
       var options = {
         node: {
-          fwsPort: 3232
+          bwsPort: 3232
         }
       };
       var service = new TestService(options);
@@ -215,7 +215,7 @@ describe('Fcash Node Service', function() {
           listen: listen
         };
       };
-      var TestService = proxyquire('../fcashBasenode', {
+      var TestService = proxyquire('../bitcorenode', {
         '../lib/expressapp': TestExpressApp,
         '../lib/wsapp': TestWSApp,
         'https': {
@@ -225,7 +225,7 @@ describe('Fcash Node Service', function() {
       var options = {
         node: {
           https: true,
-          fwsPort: 3232
+          bwsPort: 3232
         }
       };
       var service = new TestService(options);
@@ -260,7 +260,7 @@ describe('Fcash Node Service', function() {
       TestLocker.prototype.listen = sinon.stub();
       function TestEmailService() {}
       TestEmailService.prototype.start = sinon.stub();
-      var TestService = proxyquire('../fcashBasenode', {
+      var TestService = proxyquire('../bitcorenode', {
         '../lib/blockchainmonitor': TestBlockchainMonitor,
         '../lib/emailservice': TestEmailService,
         'socket.io': sinon.stub().returns({
@@ -288,7 +288,7 @@ describe('Fcash Node Service', function() {
       TestLocker.prototype.listen = sinon.stub();
       function TestEmailService() {}
       TestEmailService.prototype.start = sinon.stub().callsArgWith(1, new Error('test'));
-      var TestService = proxyquire('../fcashBasenode', {
+      var TestService = proxyquire('../bitcorenode', {
         '../lib/blockchainmonitor': TestBlockchainMonitor,
         '../lib/emailservice': TestEmailService,
         'socket.io': sinon.stub().returns({

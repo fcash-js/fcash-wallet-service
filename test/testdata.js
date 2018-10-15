@@ -3,7 +3,7 @@ var keyPair = {
   pub: '026092daeed8ecb2212869395770e956ffc9bf453f803e700f64ffa70c97a00d80',
 };
 
-var fcashpay = [{
+var copayers = [{
   id44btc: '626452e5e0e35df4d9ae4d3e60653c9ae9a814f00c84dc40f5887069b18e2110',
   id44bch: '671fee02a6c1c4de2e2609f9f9a6180dc03acfff6b759fe0b13a616ed4880065',
   id45: 'e7467366d5754be2b7d386c9737ab87214c26314bdc3489702e09c719be1bdb7',
@@ -13,11 +13,6 @@ var fcashpay = [{
   xPubKey_45H: 'xpub68pKcb8jHWqWuTgPz2czjFSJJBJTsTNdd87Mgh5bVz4sNFBJBus5KyptGBWgA4V6LGCi12s4Mw4S1JC2GkqX4NJ4kfQ47XqRZLbyM2DY9Jd',
   xPrivKey_44H_0H_0H: 'xprv9zWRZ7CXrC4z9xA9RRBFXohmPKbyCajWaCNTHPtwNeJwTnysHG5QK7WMqpNLVtvqGxts7WNcNtqBLfdaFdCGknDPXjLKt2E2BUrPaFDqrLh',
   xPubKey_44H_0H_0H: 'xpub6DVmxcjRgZdHNSEcXSiFtweVwMSTc3TMwRJ45nJYvyqvLbK1poPerupqh87rSoz27wvckb1CKnGZoLmLXSZyNGZtVd7neqSvdwJL6fceQpe',
-
-
-  xPrivKey_44H_0H_0Ht: 'tprv8ZgxMBicQKsPcxUEtgtQ2wKpkmuNKS6R2w3UmFTUHHURv4PKGE2aGkkbQEcQs9gGsoW4zPr7VM98xdbjQuWc3cZ6bkEyKy1sywhV9gLUcUi',
-  xPubKey_44H_0H_0Ht: 'tpubD6NzVbkrYhZ4WRW2nLYzSLywKoRJUmHKcEeG3mVmhZGpkYe5tcrATFNTaQRAWM3dzL2QyXoctpjkaAXruDXyc6xkF4EDGu3eQdwZXFzoFSW',
-
   xPrivKey_1H: 'xprv9upyD5bqT9HBkWym7TvTH3njEzTnjrtkLB2sg3DD2CxxA5hZKGee1sYJUtD8C4QaeATLXQ33TirRzRhuTGDBA6XRoYDMwfXAj1KSmGyNBio',
   xPubKey_1H: 'xpub68pKcb8jHWqUy14EDVTTeBjTo2JH9KcbhPxUURcpaYVw2t2hroxtZfrnLBw1bWzBrHbEJA48QmZ8DB9gTvhphKSitC15SiYx9k2ncGh55Hq',
   privKey_1H_0: 'a710be25950738a7d13637e2e09affd7f579a3479fd7cc024bd9459f8fba6659',
@@ -266,6 +261,6 @@ var history = [{
 }];
 
 
-module.exports.keyPair   = keyPair;
-module.exports.fcashpay = fcashpay;
-module.exports.history   = history;
+module.exports.keyPair = keyPair;
+module.exports.copayers = copayers;
+module.exports.history = history;

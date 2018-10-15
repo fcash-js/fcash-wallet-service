@@ -80,8 +80,8 @@ describe('Storage', function() {
     });
   });
 
-  describe('FcashApp lookup', function() {
-    it('should correctly store and fetch fcashpay lookup', function(done) {
+  describe('Copayer lookup', function() {
+    it('should correctly store and fetch copayer lookup', function(done) {
       var wallet = Model.Wallet.create({
         id: '123',
         name: 'my wallet',
@@ -91,20 +91,20 @@ describe('Storage', function() {
         network: 'livenet',
       });
       _.each(_.range(3), function(i) {
-        var fcashpay = Model.FcashApp.create({
+        var copayer = Model.Copayer.create({
           coin: 'btc',
-          name: 'fcashpay ' + i,
+          name: 'copayer ' + i,
           xPubKey: 'xPubKey ' + i,
           requestPubKey: 'requestPubKey ' + i,
           signature: 'xxx',
         });
-        wallet.addFcashApp(fcashpay);
+        wallet.addCopayer(copayer);
       });
 
       should.exist(wallet);
-      storage.storeWalletAndUpdateFcashAppLookup(wallet, function(err) {
+      storage.storeWalletAndUpdateCopayersLookup(wallet, function(err) {
         should.not.exist(err);
-        storage.fetchFcashAppLookup(wallet.fcashpay[1].id, function(err, lookup) {
+        storage.fetchCopayerLookup(wallet.copayers[1].id, function(err, lookup) {
           should.not.exist(err);
           should.exist(lookup);
           lookup.walletId.should.equal('123');
@@ -114,8 +114,8 @@ describe('Storage', function() {
         })
       });
     });
-    it('should not return error if fcashpay not found', function(done) {
-      storage.fetchFcashAppLookup('2', function(err, lookup) {
+    it('should not return error if copayer not found', function(done) {
+      storage.fetchCopayerLookup('2', function(err, lookup) {
         should.not.exist(err);
         should.not.exist(lookup);
         done();
@@ -136,17 +136,17 @@ describe('Storage', function() {
         network: 'livenet',
       });
       _.each(_.range(3), function(i) {
-        var fcashpay = Model.FcashApp.create({
+        var copayer = Model.Copayer.create({
           coin: 'btc',
-          name: 'fcashpay ' + i,
+          name: 'copayer ' + i,
           xPubKey: 'xPubKey ' + i,
           requestPubKey: 'requestPubKey ' + i,
           signature: 'signarture ' + i,
         });
-        wallet.addFcashApp(fcashpay);
+        wallet.addCopayer(copayer);
       });
       should.exist(wallet);
-      storage.storeWalletAndUpdateFcashAppLookup(wallet, function(err) {
+      storage.storeWalletAndUpdateCopayersLookup(wallet, function(err) {
         should.not.exist(err);
 
         proposals = _.map(_.range(4), function(i) {
@@ -159,7 +159,7 @@ describe('Storage', function() {
               amount: i + 100,
             }],
             feePerKb: 100e2,
-            creatorId: wallet.fcashpay[0].id,
+            creatorId: wallet.copayers[0].id,
           });
           if (i % 2 == 0) {
             tx.status = 'pending';
@@ -185,7 +185,7 @@ describe('Storage', function() {
         should.exist(tx);
         tx.id.should.equal(proposals[0].id);
         tx.walletId.should.equal(proposals[0].walletId);
-        tx.creatorName.should.equal('fcashpay 0');
+        tx.creatorName.should.equal('copayer 0');
         done();
       });
     });
@@ -195,7 +195,7 @@ describe('Storage', function() {
         should.exist(tx);
         tx.id.should.equal(proposals[0].id);
         tx.walletId.should.equal(proposals[0].walletId);
-        tx.creatorName.should.equal('fcashpay 0');
+        tx.creatorName.should.equal('copayer 0');
         done();
       });
     });

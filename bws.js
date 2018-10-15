@@ -12,7 +12,8 @@ log.disableColor();
 
 
 
-var port = process.env.FWS_PORT || config.port || 3232;
+var host = process.env.BWS_HOST || config.host || 'localhost';
+var port = process.env.BWS_PORT || config.port || 3232;
 
 var cluster = require('cluster');
 var http = require('http');
@@ -56,14 +57,14 @@ function startInstance(cb) {
 
   expressApp.start(config, function(err) {
     if (err) {
-      log.error('Could not start FWS instance', err);
+      log.error('Could not start BWS instance', err);
       return;
     }
 
-    server.listen(port);
+    server.listen(port, host);
 
     var instanceInfo = cluster.worker ? ' [Instance:' + cluster.worker.id + ']' : '';
-    log.info('FWS running ' + instanceInfo);
+    log.info('BWS running ' + instanceInfo);
     return;
   });
 };

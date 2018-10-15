@@ -1,16 +1,16 @@
 {
   "name": "fcash-wallet-service",
   "description": "A service for Mutisig HD Fcash Wallets",
-  "author": "Fcash Inc",
-  "version": "2.4.1",
+  "author": "BitPay Inc",
+  "version": "2.3.10",
   "licence": "MIT",
   "keywords": [
-    "bitcoin",
+    "fcash",
     "copay",
     "multisig",
     "wallet",
-    "fcash-base",
-    "FWS"
+    "bitcore",
+    "WWS"
   ],
   "repository": {
     "url": "git@github.com:fcash-js/fcash-wallet-service.git",
@@ -21,8 +21,8 @@
   },
   "dependencies": {
     "async": "^0.9.2",
-    "fcash-lib": "^0.15.0",
-    "fcash-lib-cash": "^0.17.0",
+    "fcash-lib": "git://github.com/fcash-js/fcash-lib.git",
+    "bitcore-lib-cash": "^0.16.1",
     "body-parser": "^1.11.0",
     "compression": "^1.6.2",
     "coveralls": "^2.11.2",
@@ -57,7 +57,7 @@
     "istanbul": "*",
     "jsdoc": "^3.5.5",
     "memdown": "^1.0.0",
-    "mocha": "^1.18.2",
+    "mocha": "^1.21.5",
     "proxyquire": "^1.7.2",
     "sinon": "1.10.3",
     "supertest": "*",
@@ -70,15 +70,15 @@
     "test": "./node_modules/.bin/mocha",
     "coveralls": "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
   },
-  "fcashBaseNode": "./fcash-basenode",
+  "bitcoreNode": "./bitcorenode",
   "contributors": [
     {
       "name": "Braydon Fuller",
-      "email": "braydon@fcash.cash"
+      "email": "braydon@bitpay.com"
     },
     {
       "name": "Ivan Socolsky",
-      "email": "ivan@fcash.cash"
+      "email": "ivan@bitpay.com"
     },
     {
       "name": "Matias Alejo Garcia",

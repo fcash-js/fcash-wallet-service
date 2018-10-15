@@ -1,23 +1,19 @@
 
 # fcash-wallet-service
 
-[![NPM Package](https://img.shields.io/npm/v/fcash-wallet-service.svg?style=flat-square)](https://www.npmjs.org/package/fcash-wallet-service)
-[![Build Status](https://img.shields.io/travis/fcash-js/fcash-wallet-service.svg?branch=master&style=flat-square)](https://travis-ci.org/fcash-js/fcash-wallet-service)
-[![Coverage Status](https://coveralls.io/repos/fcash-js/fcash-wallet-service/badge.svg?branch=master)](https://coveralls.io/r/fcash-js/fcash-wallet-service?branch=master)
-
-A Multisig HD Fcash Wallet Service.
+A Multisig HD Fcash Wallet Service. fork from BWS
 
 # Description
 
-Fcash Wallet Service facilitates multisig HD wallets creation and operation through a (hopefully) simple and intuitive REST API.
+Bitcore Wallet Service facilitates multisig HD wallets creation and operation through a (hopefully) simple and intuitive REST API.
 
-FWS can usually be installed within minutes and accommodates all the needed infrastructure for peers in a multisig wallet to communicate and operate – with minimum server trust.
+BWS can usually be installed within minutes and accommodates all the needed infrastructure for peers in a multisig wallet to communicate and operate – with minimum server trust.
   
-See [fcash-wallet-client](https://github.com/fcash-js/fcash-wallet-client) for the *official* client library that communicates to FWS and verifies its response. Also check [fcash-wallet](https://github.com/fcash-js/fcash-wallet) for a simple CLI wallet implementation that relies on FWS.
+See [Bitcore-wallet-client](https://github.com/bitpay/bitcore-wallet-client) for the *official* client library that communicates to BWS and verifies its response. Also check [Bitcore-wallet](https://github.com/bitpay/bitcore-wallet) for a simple CLI wallet implementation that relies on BWS.
 
-FWS is been used in production enviroments for [FcashApp Wallet](https://www.fcash.cash), [FcashApp Wallet](https://fcash.cash/wallet) and others.  
+BWS is been used in production enviroments for [Copay Wallet](https://copay.io), [Bitpay App wallet](https://bitpay.com/wallet) and others.  
 
-More about FWS at https://blog.fcash.cash/announcing-the-fcash-wallet-suite/
+More about BWS at https://blog.bitpay.com/announcing-the-bitcore-wallet-suite/
 
 # Getting Started
 ```
@@ -28,30 +24,30 @@ More about FWS at https://blog.fcash.cash/announcing-the-fcash-wallet-suite/
 ```
 
 
-This will launch the FWS service (with default settings) at `http://localhost:3232/fws/api`.
+This will launch the BWS service (with default settings) at `http://localhost:3232/bws/api`.
 
-FWS needs mongoDB. You can configure the connection at `config.js`
+BWS needs mongoDB. You can configure the connection at `config.js`
 
-FWS supports SSL and Clustering. For a detailed guide on installing FWS with extra features see [Installing FWS](https://github.com/fcash-js/fcash-wallet-service/blob/master/installation.md). 
+BWS supports SSL and Clustering. For a detailed guide on installing BWS with extra features see [Installing BWS](https://github.com/fcash-js/fcash-wallet-service/blob/master/installation.md). 
 
-FWS uses by default a Request Rate Limitation to CreateWallet endpoint. If you need to modify it, check defaults.js' `Defaults.RateLimit`
+BWS uses by default a Request Rate Limitation to CreateWallet endpoint. If you need to modify it, check defaults.js' `Defaults.RateLimit`
 
-# Using FWS with PM2
+# Using BWS with PM2
 
-FWS can be used with PM2 with the provided `app.js` script: 
+BWS can be used with PM2 with the provided `app.js` script: 
  
 ```
-  pm2 start app.js --name "fcash-wallet-service"
+  pm2 start app.js --name "bitcoin-wallet-service"
 ```
 
 # Security Considerations
- * Private keys are never sent to FWS. FcashApp store them locally.
- * Extended public keys are stored on FWS. This allows FWS to easily check wallet balance, send offline notifications to fcashpay, etc.
- * During wallet creation, the initial fcashpay creates a wallet secret that contains a private key. All fcashpay need to prove they have the secret by signing their information with this private key when joining the wallet. The secret should be shared using secured channels.
- * A fcashpay could join the wallet more than once, and there is no mechanism to prevent this. See [wallet](https://github.com/fcash-js/fcash-wallet)'s confirm command, for a method for confirming fcashpay.
- * All FWS responses are verified:
-  * Addresses and change addresses are derived independently and locally by the fcashpay from their local data.
-  * TX Proposals templates are signed by fcashpay and verified by others, so the FWS cannot create or tamper with them.
+ * Private keys are never sent to BWS. Copayers store them locally.
+ * Extended public keys are stored on BWS. This allows BWS to easily check wallet balance, send offline notifications to copayers, etc.
+ * During wallet creation, the initial copayer creates a wallet secret that contains a private key. All copayers need to prove they have the secret by signing their information with this private key when joining the wallet. The secret should be shared using secured channels.
+ * A copayer could join the wallet more than once, and there is no mechanism to prevent this. See [wallet](https://github.com/bitpay/bitcore-wallet)'s confirm command, for a method for confirming copayers.
+ * All BWS responses are verified:
+  * Addresses and change addresses are derived independently and locally by the copayers from their local data.
+  * TX Proposals templates are signed by copayers and verified by others, so the BWS cannot create or tamper with them.
 
 # Using SSL
 
@@ -69,7 +65,7 @@ FWS can be used with PM2 with the provided `app.js` script:
   // CAroot: '', // ex. 'AddTrustExternalCARoot.crt'
 ```
 
-@dabura667 made a report about how to use letsencrypt with FWS: https://github.com/fcash-js/fcash-wallet-service/issues/423
+@dabura667 made a report about how to use letsencrypt with BWS: https://github.com/bitpay/bitcore-wallet-service/issues/423
   
 
 # REST API
@@ -85,14 +81,14 @@ Note: all currency amounts are in units of satoshis (1/100,000,000 of a bitcoin)
 ```
 Identity is the Peer-ID, this will identify the peer and its wallet. Signature is the current request signature, using `requestSigningKey`, the `m/1/1` derivative of the Extended Private Key.
 
-See [Fcash Wallet Client](https://github.com/fcash-js/fcash-wallet-client/blob/master/lib/api.js#L73) for implementation details.
+See [Bitcore Wallet Client](https://github.com/bitpay/bitcore-wallet-client/blob/master/lib/api.js#L73) for implementation details.
 
 
 ## GET Endpoints
 `/v1/wallets/`: Get wallet information
 
 Returns:
- * Wallet object. (see [fields on the source code](https://github.com/fcash-js/fcash-wallet-service/blob/master/lib/model/wallet.js)).
+ * Wallet object. (see [fields on the source code](https://github.com/bitpay/bitcore-wallet-service/blob/master/lib/model/wallet.js)).
 
 `/v1/txhistory/`: Get Wallet's transaction history
  
@@ -111,17 +107,17 @@ Returns:
  * proposalId
  * creatorName
  * message
- * actions array ['createdOn', 'type', 'FcashPayId', 'fcashpayName', 'comment']
+ * actions array ['createdOn', 'type', 'copayerId', 'copayerName', 'comment']
   
  
 `/v1/txproposals/`:  Get Wallet's pending transaction proposals and their status
 Returns:
- * List of pending TX Proposals. (see [fields on the source code](https://github.com/fcash-js/fcash-wallet-service/blob/master/lib/model/txproposal.js))
+ * List of pending TX Proposals. (see [fields on the source code](https://github.com/bitpay/bitcore-wallet-service/blob/master/lib/model/txproposal.js))
 
 `/v1/addresses/`: Get Wallet's main addresses (does not include change addresses)
 
 Returns:
- * List of Addresses object: (https://github.com/fcash-js/fcash-wallet-service/blob/master/lib/model/address.js)).  This call is mainly provided so the client check this addresses for incoming transactions (using a service like [Insight](https://insight.is)
+ * List of Addresses object: (https://github.com/bitpay/bitcore-wallet-service/blob/master/lib/model/address.js)).  This call is mainly provided so the client check this addresses for incoming transactions (using a service like [Insight](https://insight.is)
 
 `/v1/balance/`:  Get Wallet's balance
 
@@ -154,30 +150,30 @@ Returns:
  * name: Name of the wallet 
  * m: Number of required peers to sign transactions 
  * n: Number of total peers on the wallet
- * pubKey: Wallet Creation Public key to check joining fcashpay's signatures (the private key is unknown by FWS and must be communicated
+ * pubKey: Wallet Creation Public key to check joining copayer's signatures (the private key is unknown by BWS and must be communicated
   by the creator peer to other peers).
 
 Returns: 
  * walletId: Id of the new created wallet
 
 
-`/v1/wallets/:id/fcashpay/`: Join a Wallet in creation
+`/v1/wallets/:id/copayers/`: Join a Wallet in creation
 
 Required Arguments:
  * walletId: Id of the wallet to join
- * name: FcashApp Name
- * xPubKey - Extended Public Key for this fcashpay.
- * requestPubKey - Public Key used to check requests from this fcashpay.
- * fcashpaySignature - Signature used by other fcashpay to verify that the fcashpay joining knows the wallet secret.
+ * name: Copayer Name
+ * xPubKey - Extended Public Key for this copayer.
+ * requestPubKey - Public Key used to check requests from this copayer.
+ * copayerSignature - Signature used by other copayers to verify that the copayer joining knows the wallet secret.
 
 Returns:
- * FcashPayId: Assigned ID of the fcashpay (to be used on x-identity header)
+ * copayerId: Assigned ID of the copayer (to be used on x-identity header)
  * wallet: Object with wallet's information
 
 `/v1/txproposals/`: Add a new transaction proposal
 
 Required Arguments:
- * toAddress: RCPT Fcash address.
+ * toAddress: RCPT Bitcoin address.
  * amount: amount (in satoshis) of the mount proposed to be transfered
  * proposalsSignature: Signature of the proposal by the creator peer, using proposalSigningKey.
  * (opt) message: Encrypted private message to peers.
@@ -186,13 +182,13 @@ Required Arguments:
  * (opt) excludeUnconfirmedUtxos: Do not use UTXOs of unconfirmed transactions as inputs for this TX.
 
 Returns:
- * TX Proposal object. (see [fields on the source code](https://github.com/fcash-js/fcash-wallet-service/blob/master/lib/model/txproposal.js)). `.id` is probably needed in this case.
+ * TX Proposal object. (see [fields on the source code](https://github.com/bitpay/bitcore-wallet-service/blob/master/lib/model/txproposal.js)). `.id` is probably needed in this case.
 
 
 `/v3/addresses/`: Request a new main address from wallet . (creates an address on normal conditions)
 
 Returns:
- * Address object: (https://github.com/fcash-js/fcash-wallet-service/blob/master/lib/model/address.js)). Note that `path` is returned so client can derive the address independently and check server's response.
+ * Address object: (https://github.com/bitpay/bitcore-wallet-service/blob/master/lib/model/address.js)). Note that `path` is returned so client can derive the address independently and check server's response.
 
 `/v1/txproposals/:id/signatures/`: Sign a transaction proposal
 
@@ -200,22 +196,22 @@ Required Arguments:
  * signatures:  All Transaction's input signatures, in order of appearance.
   
 Returns:
- * TX Proposal object. (see [fields on the source code](https://github.com/fcash-js/fcash-wallet-service/blob/master/lib/model/txproposal.js)). `.status` is probably needed in this case.
+ * TX Proposal object. (see [fields on the source code](https://github.com/bitpay/bitcore-wallet-service/blob/master/lib/model/txproposal.js)). `.status` is probably needed in this case.
   
 `/v1/txproposals/:id/broadcast/`: Broadcast a transaction proposal
  
 Returns:
- * TX Proposal object. (see [fields on the source code](https://github.com/fcash-js/fcash-wallet-service/blob/master/lib/model/txproposal.js)). `.status` is probably needed in this case.
+ * TX Proposal object. (see [fields on the source code](https://github.com/bitpay/bitcore-wallet-service/blob/master/lib/model/txproposal.js)). `.status` is probably needed in this case.
   
 `/v1/txproposals/:id/rejections`: Reject a transaction proposal
  
 Returns:
- * TX Proposal object. (see [fields on the source code](https://github.com/fcash-js/fcash-wallet-service/blob/master/lib/model/txproposal.js)). `.status` is probably needed in this case.
+ * TX Proposal object. (see [fields on the source code](https://github.com/bitpay/bitcore-wallet-service/blob/master/lib/model/txproposal.js)). `.status` is probably needed in this case.
 
 `/v1/addresses/scan`: Start an address scan process looking for activity.
 
  Optional Arguments:
- * includeFcashAppBranches: Scan all fcashpay branches following BIP45 recommendation (defaults to false). 
+ * includeCopayerBranches: Scan all copayer branches following BIP45 recommendation (defaults to false). 
 
 `/v1/txconfirmations/`: Subscribe to receive push notifications when the specified transaction gets confirmed.
 Required Arguments:
@@ -229,7 +225,7 @@ Required Arguments:
 `/v1/txproposals/:id/`: Deletes a transaction proposal. Only the creator can delete a TX Proposal, and only if it has no other signatures or rejections
 
  Returns:
- * TX Proposal object. (see [fields on the source code](https://github.com/fcash-js/fcash-wallet-service/blob/master/lib/model/txproposal.js)). `.id` is probably needed in this case.
+ * TX Proposal object. (see [fields on the source code](https://github.com/bitpay/bitcore-wallet-service/blob/master/lib/model/txproposal.js)). `.id` is probably needed in this case.
 
 `/v1/txconfirmations/:txid`: Unsubscribe from transaction `txid` and no longer listen to its confirmation.
 

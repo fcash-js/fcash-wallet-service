@@ -39,7 +39,7 @@ describe('Fiat rate service', function() {
   });
   describe('#getRate', function() {
     it('should get current rate', function(done) {
-      service.storage.storeFiatRate('Fcash', [{
+      service.storage.storeFiatRate('BitPay', [{
         code: 'USD',
         value: 123.45,
       }], function(err) {
@@ -54,12 +54,12 @@ describe('Fiat rate service', function() {
       });
     });
     it('should get current rate for different currency', function(done) {
-      service.storage.storeFiatRate('Fcash', [{
+      service.storage.storeFiatRate('BitPay', [{
         code: 'USD',
         value: 123.45,
       }], function(err) {
         should.not.exist(err);
-        service.storage.storeFiatRate('Fcash', [{
+        service.storage.storeFiatRate('BitPay', [{
           code: 'EUR',
           value: 345.67,
         }], function(err) {
@@ -76,7 +76,7 @@ describe('Fiat rate service', function() {
     });
 
     it('should get current rate for different provider', function(done) {
-      service.storage.storeFiatRate('Fcash', [{
+      service.storage.storeFiatRate('BitPay', [{
         code: 'USD',
         value: 100.00,
       }], function(err) {
@@ -107,13 +107,13 @@ describe('Fiat rate service', function() {
     it('should get rate for specific ts', function(done) {
       var clock = sinon.useFakeTimers(0, 'Date');
       clock.tick(20);
-      service.storage.storeFiatRate('Fcash', [{
+      service.storage.storeFiatRate('BitPay', [{
         code: 'USD',
         value: 123.45,
       }], function(err) {
         should.not.exist(err);
         clock.tick(100);
-        service.storage.storeFiatRate('Fcash', [{
+        service.storage.storeFiatRate('BitPay', [{
           code: 'USD',
           value: 345.67,
         }], function(err) {
@@ -137,7 +137,7 @@ describe('Fiat rate service', function() {
       var clock = sinon.useFakeTimers(0, 'Date');
       async.each([1.00, 2.00, 3.00, 4.00], function(value, next) {
         clock.tick(100);
-        service.storage.storeFiatRate('Fcash', [{
+        service.storage.storeFiatRate('BitPay', [{
           code: 'USD',
           value: value,
         }, {
@@ -177,7 +177,7 @@ describe('Fiat rate service', function() {
 
     it('should not get rate older than 2hs', function(done) {
       var clock = sinon.useFakeTimers(0, 'Date');
-      service.storage.storeFiatRate('Fcash', [{
+      service.storage.storeFiatRate('BitPay', [{
         code: 'USD',
         value: 123.45,
       }], function(err) {
@@ -208,7 +208,7 @@ describe('Fiat rate service', function() {
   describe('#fetch', function() {
     it('should fetch rates from all providers', function(done) {
       var clock = sinon.useFakeTimers(100, 'Date');
-      var fcash = [{
+      var bitpay = [{
         code: 'USD',
         rate: 123.45,
       }, {
@@ -219,9 +219,9 @@ describe('Fiat rate service', function() {
         last: 120.00,
       };
       request.get.withArgs({
-        url: 'https://fcash.cash/api/rates/',
+        url: 'https://bitpay.com/api/rates/',
         json: true
-      }).yields(null, null, fcash);
+      }).yields(null, null, bitpay);
       request.get.withArgs({
         url: 'https://www.bitstamp.net/api/ticker/',
         json: true
@@ -262,7 +262,7 @@ describe('Fiat rate service', function() {
         last: 120.00,
       };
       request.get.withArgs({
-        url: 'https://fcash.cash/api/rates/',
+        url: 'https://bitpay.com/api/rates/',
         json: true
       }).yields('dummy error', null, null);
       request.get.withArgs({

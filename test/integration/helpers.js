@@ -12,10 +12,10 @@ var tingodb = require('tingodb')({
   memStore: true
 });
 
-var Fcash = require('fcash-lib');
-var Fcash_ = {
-  btc: Fcash,
-  bch: require('fcash-lib-cash')
+var Bitcore = require('fcash-lib');
+var Bitcore_ = {
+  btc: Bitcore,
+  bch: require('bitcore-lib-cash')
 };
 
 var Common = require('../../lib/common');
@@ -34,13 +34,13 @@ var useMongoDb = !!process.env.USE_MONGO_DB;
 
 var helpers = {};
 
-helpers.CLIENT_VERSION = 'fwc-2.0.0';
+helpers.CLIENT_VERSION = 'bwc-2.0.0';
 
 helpers.before = function(cb) {
   function getDb(cb) {
     if (useMongoDb) {
       var mongodb = require('mongodb');
-      mongodb.MongoClient.connect('mongodb://localhost:27017/fws_test', function(err, db) {
+      mongodb.MongoClient.connect('mongodb://localhost:27017/bws_test', function(err, db) {
         if (err) throw err;
         return cb(db);
       });
@@ -86,33 +86,33 @@ helpers.getStorage = function() {
 };
 
 helpers.signMessage = function(text, privKey) {
-  var priv = new Fcash.PrivateKey(privKey);
+  var priv = new Bitcore.PrivateKey(privKey);
   var hash = Utils.hashMessage(text);
-  return Fcash.crypto.ECDSA.sign(hash, priv, 'little').toString();
+  return Bitcore.crypto.ECDSA.sign(hash, priv, 'little').toString();
 };
 
 helpers.signRequestPubKey = function(requestPubKey, xPrivKey) {
-  var priv = new Fcash.HDPrivateKey(xPrivKey).deriveChild(Constants.PATHS.REQUEST_KEY_AUTH).privateKey;
+  var priv = new Bitcore.HDPrivateKey(xPrivKey).deriveChild(Constants.PATHS.REQUEST_KEY_AUTH).privateKey;
   return helpers.signMessage(requestPubKey, priv);
 };
 
-helpers.getAuthServer = function(FcashPayId, cb) {
+helpers.getAuthServer = function(copayerId, cb) {
   var verifyStub = sinon.stub(WalletService.prototype, '_verifySignature');
   verifyStub.returns(true);
 
   WalletService.getInstanceWithAuth({
-    FcashPayId: FcashPayId,
+    copayerId: copayerId,
     message: 'dummy',
     signature: 'dummy',
     clientVersion: helpers.CLIENT_VERSION,
   }, function(err, server) {
     verifyStub.restore();
-    if (err || !server) throw new Error('Could not login as FcashPayId ' + FcashPayId + ' err: ' + err);
+    if (err || !server) throw new Error('Could not login as copayerId ' + copayerId + ' err: ' + err);
     return cb(server);
   });
 };
 
-helpers._generateFcashAppTestData = function() {
+helpers._generateCopayersTestData = function() {
   var xPrivKeys = ['xprv9s21ZrQH143K2n4rV4AtAJFptEmd1tNMKCcSyQBCSuN5eq1dCUhcv6KQJS49joRxu8NNdFxy8yuwTtzCPNYUZvVGC7EPRm2st2cvE7oyTbB',
     'xprv9s21ZrQH143K3BwkLceWNLUsgES15JoZuv8BZfnmDRcCGtDooUAPhY8KovhCWcRLXUun5AYL5vVtUNRrmPEibtfk9ongxAGLXZzEHifpvwZ',
     'xprv9s21ZrQH143K3xgLzxd6SuWqG5Zp1iUmyGgSsJVhdQNeTzAqBFvXXLZqZzFZqocTx4HD9vUVYU27At5i8q46LmBXXL97fo4H9C3tHm4BnjY',
@@ -125,22 +125,22 @@ helpers._generateFcashAppTestData = function() {
     'xprv9s21ZrQH143K2wcRMP75tAEL5JnUx4xU2AbUBQzVVUDP7DHZJkjF3kaRE7tcnPLLLL9PGjYTWTJmCQPaQ4GGzgWEUFJ6snwJG9YnQHBFRNR'
   ];
 
-  console.log('var fcashpay = [');
+  console.log('var copayers = [');
   _.each(xPrivKeys, function(xPrivKeyStr, c) {
-    var xpriv = Fcash.HDPrivateKey(xPrivKeyStr);
-    var xpub = Fcash.HDPublicKey(xpriv);
+    var xpriv = Bitcore.HDPrivateKey(xPrivKeyStr);
+    var xpub = Bitcore.HDPublicKey(xpriv);
 
     var xpriv_45H = xpriv.deriveChild(45, true);
-    var xpub_45H = Fcash.HDPublicKey(xpriv_45H);
-    var id45 = Model.FcashApp._xPubToFcashAppId('btc', xpub_45H.toString());
+    var xpub_45H = Bitcore.HDPublicKey(xpriv_45H);
+    var id45 = Model.Copayer._xPubToCopayerId('btc', xpub_45H.toString());
 
     var xpriv_44H_0H_0H = xpriv.deriveChild(44, true).deriveChild(0, true).deriveChild(0, true);
-    var xpub_44H_0H_0H = Fcash.HDPublicKey(xpriv_44H_0H_0H);
-    var id44btc = Model.FcashApp._xPubToFcashAppId('btc', xpub_44H_0H_0H.toString());
-    var id44bch = Model.FcashApp._xPubToFcashAppId('bch', xpub_44H_0H_0H.toString());
+    var xpub_44H_0H_0H = Bitcore.HDPublicKey(xpriv_44H_0H_0H);
+    var id44btc = Model.Copayer._xPubToCopayerId('btc', xpub_44H_0H_0H.toString());
+    var id44bch = Model.Copayer._xPubToCopayerId('bch', xpub_44H_0H_0H.toString());
 
     var xpriv_1H = xpriv.deriveChild(1, true);
-    var xpub_1H = Fcash.HDPublicKey(xpriv_1H);
+    var xpub_1H = Bitcore.HDPublicKey(xpriv_1H);
     var priv = xpriv_1H.deriveChild(0).privateKey;
     var pub = xpub_1H.deriveChild(0).publicKey;
 
@@ -161,9 +161,9 @@ helpers._generateFcashAppTestData = function() {
   console.log('];');
 };
 
-helpers.getSignedFcashAppOpts = function(opts) {
-  var hash = WalletService._getFcashAppHash(opts.name, opts.xPubKey, opts.requestPubKey);
-  opts.fcashpaySignature = helpers.signMessage(hash, TestData.keyPair.priv);
+helpers.getSignedCopayerOpts = function(opts) {
+  var hash = WalletService._getCopayerHash(opts.name, opts.xPubKey, opts.requestPubKey);
+  opts.copayerSignature = helpers.signMessage(hash, TestData.keyPair.priv);
   return opts;
 };
 
@@ -175,7 +175,7 @@ helpers.createAndJoinWallet = function(m, n, opts, cb) {
   opts = opts || {};
 
   var server = new WalletService();
-  var FcashPayIds = [];
+  var copayerIds = [];
   var offset = opts.offset || 0;
 
   var walletOpts = {
@@ -185,7 +185,6 @@ helpers.createAndJoinWallet = function(m, n, opts, cb) {
     pubKey: TestData.keyPair.pub,
     singleAddress: !!opts.singleAddress,
     coin: opts.coin || 'btc',
-    network: opts.network || 'livenet',
   };
   if (_.isBoolean(opts.supportBIP44AndP2PKH))
     walletOpts.supportBIP44AndP2PKH = opts.supportBIP44AndP2PKH;
@@ -194,34 +193,26 @@ helpers.createAndJoinWallet = function(m, n, opts, cb) {
     if (err) return cb(err);
 
     async.each(_.range(n), function(i, cb) {
-      var fcashpayData = TestData.fcashpay[i + offset];
-
-
-    var pub = (_.isBoolean(opts.supportBIP44AndP2PKH) && !opts.supportBIP44AndP2PKH) ? fcashpayData.xPubKey_45H : fcashpayData.xPubKey_44H_0H_0H;
-
-    if (opts.network == 'testnet') 
-      pub = fcashpayData.xPubKey_44H_0H_0Ht;
-
-      var FcashPayOpts = helpers.getSignedFcashAppOpts({
+      var copayerData = TestData.copayers[i + offset];
+      var copayerOpts = helpers.getSignedCopayerOpts({
         walletId: walletId,
         coin: opts.coin,
-        name: 'fcashpay ' + (i + 1),
-        xPubKey: pub,
-        requestPubKey: fcashpayData.pubKey_1H_0,
+        name: 'copayer ' + (i + 1),
+        xPubKey: (_.isBoolean(opts.supportBIP44AndP2PKH) && !opts.supportBIP44AndP2PKH) ? copayerData.xPubKey_45H : copayerData.xPubKey_44H_0H_0H,
+        requestPubKey: copayerData.pubKey_1H_0,
         customData: 'custom data ' + (i + 1),
       });
       if (_.isBoolean(opts.supportBIP44AndP2PKH))
-        FcashPayOpts.supportBIP44AndP2PKH = opts.supportBIP44AndP2PKH;
+        copayerOpts.supportBIP44AndP2PKH = opts.supportBIP44AndP2PKH;
 
-      server.joinWallet(FcashPayOpts, function(err, result) {
-        if (err) console.log(err);
+      server.joinWallet(copayerOpts, function(err, result) {
         should.not.exist(err);
-        FcashPayIds.push(result.FcashPayId);
+        copayerIds.push(result.copayerId);
         return cb(err);
       });
     }, function(err) {
       if (err) return new Error('Could not generate wallet');
-      helpers.getAuthServer(FcashPayIds[0], function(s) {
+      helpers.getAuthServer(copayerIds[0], function(s) {
         s.getWallet({}, function(err, w) {
           cb(s, w);
         });
@@ -232,7 +223,7 @@ helpers.createAndJoinWallet = function(m, n, opts, cb) {
 
 
 helpers.randomTXID = function() {
-  return Fcash.crypto.Hash.sha256(new Buffer(Math.random() * 100000)).toString('hex');;
+  return Bitcore.crypto.Hash.sha256(new Buffer(Math.random() * 100000)).toString('hex');;
 };
 
 helpers.toSatoshi = function(btc) {
@@ -286,7 +277,7 @@ helpers.stubUtxos = function(server, wallet, amounts, opts, cb) {
 
   if (!helpers._utxos) helpers._utxos = {};
 
-  var S = Fcash_[wallet.coin].Script;
+  var S = Bitcore_[wallet.coin].Script;
 
   async.waterfall([
 
@@ -416,7 +407,7 @@ helpers.clientSign = function(txp, derivedXPrivKey) {
   var privs = [];
   var derived = {};
 
-  var xpriv = new Fcash.HDPrivateKey(derivedXPrivKey, txp.network);
+  var xpriv = new Bitcore.HDPrivateKey(derivedXPrivKey, txp.network);
 
   _.each(txp.inputs, function(i) {
     if (!derived[i.path]) {
@@ -425,7 +416,7 @@ helpers.clientSign = function(txp, derivedXPrivKey) {
     }
   });
 
-  var t = txp.getFcashTx();
+  var t = txp.getBitcoreTx();
 
   var signatures = _.map(privs, function(priv, i) {
     return t.getSignatures(priv);
